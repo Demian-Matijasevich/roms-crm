@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import type { CloserStats, SetterStats } from "@/lib/types";
 import { formatUSD, formatPct } from "@/lib/data";
-import MonthSelector from "../components/MonthSelector";
+import MonthSelector from "@/app/components/MonthSelector";
 import { getCloserStats, getSetterStats } from "@/lib/data";
 import type { Llamada } from "@/lib/types";
 
@@ -298,3 +298,4 @@ export default function LeaderboardClient({ llamadas, defaultMonth, availableMon
     </div>
   );
 }
+

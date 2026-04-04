@@ -2,8 +2,8 @@
 
 import { useState, useMemo } from "react";
 import { filterByMonth, getCloserStats, getSetterStats, formatUSD } from "@/lib/data";
-import { GastosChart } from "../components/Charts";
-import MonthSelector from "../components/MonthSelector";
+import { GastosChart } from "@/app/components/Charts";
+import MonthSelector from "@/app/components/MonthSelector";
 import type { Llamada, Gasto, MonthlyData } from "@/lib/types";
 
 interface FinanzasClientProps {
@@ -240,3 +240,4 @@ export default function FinanzasClient({
     </div>
   );
 }
+

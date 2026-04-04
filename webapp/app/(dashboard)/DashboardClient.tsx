@@ -13,10 +13,10 @@ import {
   isPresentada,
 } from "@/lib/data";
 import { COMMISSION_CLOSER, COMMISSION_SETTER, MONTH_LABELS } from "@/lib/constants";
-import KPICard from "./components/KPICard";
-import { MonthlyRevenueChart } from "./components/Charts";
-import MonthSelector from "./components/MonthSelector";
-import StatusBadge from "./components/StatusBadge";
+import KPICard from "@/app/components/KPICard";
+import { MonthlyRevenueChart } from "@/app/components/Charts";
+import MonthSelector from "@/app/components/MonthSelector";
+import StatusBadge from "@/app/components/StatusBadge";
 import type { Llamada, Gasto, MonthlyData, AuthSession } from "@/lib/types";
 
 const OBJETIVOS = [
@@ -480,3 +480,4 @@ export default function DashboardClient({ llamadas, gastos, monthly, session, is
     </div>
   );
 }
+
