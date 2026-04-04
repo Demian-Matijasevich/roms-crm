@@ -16,7 +16,8 @@ export default async function Dashboard() {
   const llamadas = isAdmin
     ? allLlamadas
     : allLlamadas.filter(
-        (l) => l.closer === session.nombre || l.setter === session.nombre
+        (l) => l.closer?.toLowerCase().includes(session.nombre.toLowerCase()) || 
+               l.setter?.toLowerCase().includes(session.nombre.toLowerCase())
       );
 
   const monthly = getMonthlyData(llamadas, gastos);

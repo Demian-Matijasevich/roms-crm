@@ -55,7 +55,10 @@ export default function LlamadasClient({ llamadas, isAdmin, userName }: Props) {
 
     // Role filter: non-admins only see their own calls
     if (!isAdmin) {
-      data = data.filter(l => l.closer === userName || l.setter === userName);
+      data = data.filter(l => 
+        l.closer?.toLowerCase().includes(userName.toLowerCase()) || 
+        l.setter?.toLowerCase().includes(userName.toLowerCase())
+      );
     }
 
     if (search) {
