@@ -1,0 +1,93 @@
+<h2>Estructura de la App — ROMS CRM v2</h2>
+<p class="subtitle">4 roles, cada uno ve solo lo que le compete. Elegí la estructura que te cierre más.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="structure-a" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>A — Por Rol (sidebar cambia según usuario)</h3>
+      <div style="font-size:13px; line-height:1.8; color:#ccc;">
+        <div style="margin-bottom:12px;">
+          <span style="color:#8b5cf6; font-weight:bold;">ADMIN (Vos/Juanma)</span><br>
+          📊 Dashboard General<br>
+          📞 CRM Llamadas (todas)<br>
+          👥 Alumnos Activos + Vencimientos<br>
+          💰 Finanzas (ingresos, gastos, P&L)<br>
+          💳 Cuotas & Cobros<br>
+          🏆 Leaderboard Closers & Setters<br>
+          🎯 Objetivos<br>
+          ⚙️ Admin (crear usuarios, config)
+        </div>
+        <div style="margin-bottom:12px;">
+          <span style="color:#22c55e; font-weight:bold;">CLOSER (ej: Valentino)</span><br>
+          📊 Mi Dashboard (mis métricas)<br>
+          📝 Cargar Llamada (form)<br>
+          💰 Cargar Pago (form)<br>
+          📞 Mis Llamadas Agendadas<br>
+          🏆 Leaderboard (ve a todos)
+        </div>
+        <div style="margin-bottom:12px;">
+          <span style="color:#eab308; font-weight:bold;">SETTER</span><br>
+          📊 Mi Dashboard (mis métricas)<br>
+          🔗 Creador de UTMs<br>
+          📝 Reporte Diario (form)<br>
+          💰 Mis Comisiones<br>
+          🏆 Leaderboard (ve a todos)
+        </div>
+        <div>
+          <span style="color:#f97316; font-weight:bold;">ASISTENTE</span><br>
+          👥 Alumnos + Vencimientos + Renovaciones<br>
+          💳 Seguimiento de Cuotas<br>
+          💰 Registro de Pagos del Día<br>
+          📞 CRM Llamadas (read-only)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="structure-b" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>B — Todo visible, filtrado por permisos</h3>
+      <div style="font-size:13px; line-height:1.8; color:#ccc;">
+        <div style="margin-bottom:12px;">
+          <span style="color:#8b5cf6; font-weight:bold;">SIDEBAR (igual para todos)</span><br>
+          📊 Dashboard<br>
+          📞 Llamadas<br>
+          👥 Alumnos<br>
+          💰 Finanzas<br>
+          💳 Cuotas<br>
+          🏆 Leaderboard<br>
+          🎯 Objetivos<br>
+          ⚙️ Config
+        </div>
+        <div>
+          <span style="color:#a1a1aa;">Cada página filtra según rol:</span><br>
+          - Closer ve solo sus datos en Dashboard/Llamadas<br>
+          - Setter ve solo sus datos + UTM builder<br>
+          - Asistente ve todo pero no puede editar ventas<br>
+          - Admin ve y edita todo<br><br>
+          <span style="color:#ef4444;">Contra:</span> El closer ve pestañas que no le sirven (Gastos, Objetivos). Puede confundir.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:20px; padding:16px; background:#1a1a2e; border-radius:8px; border:1px solid #27272a;">
+  <h3 style="color:#8b5cf6; margin-bottom:8px;">Páginas clave que incluye cualquier opción:</h3>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:13px; color:#ccc;">
+    <div>
+      <strong>Hoy</strong> — cuánta plata entró hoy, llamadas del día<br>
+      <strong>Filtro por mes</strong> — en toda la app, selector global<br>
+      <strong>Form Llamada</strong> — el closer carga resultado fácil<br>
+      <strong>Form Pago</strong> — con acumulado del día como el ejemplo
+    </div>
+    <div>
+      <strong>Alumnos</strong> — semáforo de vencimientos (verde/amarillo/rojo)<br>
+      <strong>Cuotas</strong> — próximas a vencer, atrasadas, pagadas<br>
+      <strong>UTM Builder</strong> — genera links con tracking para setters<br>
+      <strong>Objetivos</strong> — metas mensuales con progreso visual
+    </div>
+  </div>
+</div>

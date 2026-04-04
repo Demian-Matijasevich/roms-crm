@@ -1,0 +1,39 @@
+[
+  {
+    "id": "recDCuKteFEdPDQMb",
+    "createdTime": "2026-02-14T02:28:29.000Z",
+    "fields": {
+      "🙎‍♂️ Nombre Completo": "Valen",
+      "❗️Identificador (NO CAMBIAR)": "VL",
+      "🧾 Reporte de Llamadas": [
+        "reckH2NvOr7JbQYoN",
+        "rechrV7Domy6GFpF2",
+        "recgvI16JaT0zCUz5",
+        "recgU5xQJb79AFM61",
+        "recuSaxtvj8MY34eK",
+        "rec7mUwB3mEkDuqeI",
+        "recrtBsyd047n2ynT",
+        "recgJKewaVpsicXR6",
+        "recPypDQOksGQEpgU",
+        "recgwSC0iCcABSSjj",
+        "recKzHzOwXX4WYIrg",
+        "recW8dAta2FAMDB11",
+        "reciw5VRp37LYZz9e",
+        "recuSwbfSfNxcR0u8",
+        "rec8msn18jco4x8vC"
+      ],
+      "📞 Total Agendas": 0,
+      "✅ Llamadas Presentadas": 0,
+      "💰 Cash Collected": 0,
+      "🚀 Llamadas Presentadas Calificadas": 0,
+      "% Cierre total Compilación (de 🧾 Reporte de Llamadas)": {
+        "specialValue": "NaN"
+      },
+      "💰 Comision Setters": 0,
+      "Llamadas cerradas": 0,
+      "% Show Up Compilación (de 🧾 Reporte de Llamadas)": {
+        "specialValue": "NaN"
+      }
+    }
+  }
+]

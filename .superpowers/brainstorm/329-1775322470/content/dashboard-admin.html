@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROMS CRM — Dashboard Admin</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#0d0d0f; color:#e5e5e5; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; display:flex; min-height:100vh; }
+
+  /* Sidebar */
+  .sidebar { width:220px; background:#111113; border-right:1px solid #27272a; display:flex; flex-direction:column; position:fixed; height:100vh; }
+  .sidebar-logo { padding:20px; border-bottom:1px solid #27272a; }
+  .sidebar-logo h1 { font-size:20px; font-weight:800; }
+  .sidebar-logo h1 span { color:#8b5cf6; }
+  .sidebar-logo p { font-size:11px; color:#71717a; margin-top:2px; }
+  .sidebar-nav { padding:12px; flex:1; }
+  .sidebar-nav a { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; color:#a1a1aa; text-decoration:none; font-size:13px; margin-bottom:2px; transition:all .15s; }
+  .sidebar-nav a:hover { background:#1f1f23; color:#e5e5e5; }
+  .sidebar-nav a.active { background:rgba(139,92,246,.15); color:#a78bfa; font-weight:500; }
+  .sidebar-nav .section-label { font-size:10px; text-transform:uppercase; color:#52525b; padding:16px 12px 6px; letter-spacing:.5px; }
+  .sidebar-user { padding:16px 20px; border-top:1px solid #27272a; }
+  .sidebar-user .name { font-size:13px; font-weight:500; }
+  .sidebar-user .role { font-size:11px; color:#8b5cf6; }
+
+  /* Main */
+  .main { margin-left:220px; flex:1; padding:32px; }
+
+  /* Header */
+  .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
+  .header h2 { font-size:22px; font-weight:700; }
+  .month-filter { display:flex; align-items:center; gap:8px; }
+  .month-filter select { background:#18181b; border:1px solid #27272a; color:#e5e5e5; padding:8px 12px; border-radius:8px; font-size:13px; }
+  .today-badge { background:rgba(139,92,246,.15); color:#a78bfa; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:500; }
+
+  /* KPI Row */
+  .kpi-row { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:24px; }
+  .kpi { background:#18181b; border:1px solid #27272a; border-radius:12px; padding:18px; }
+  .kpi .label { font-size:11px; color:#71717a; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+  .kpi .value { font-size:26px; font-weight:700; }
+  .kpi .sub { font-size:11px; color:#71717a; margin-top:4px; }
+  .kpi .value.purple { color:#a78bfa; }
+  .kpi .value.green { color:#22c55e; }
+  .kpi .value.red { color:#ef4444; }
+  .kpi .value.yellow { color:#eab308; }
+
+  /* Today Strip */
+  .today-strip { background:linear-gradient(135deg,#1a1030,#18181b); border:1px solid #3b2d6e; border-radius:12px; padding:20px 24px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; }
+  .today-strip h3 { font-size:14px; color:#a78bfa; margin-bottom:4px; }
+  .today-strip .big { font-size:32px; font-weight:800; color:#22c55e; }
+  .today-strip .detail { font-size:12px; color:#71717a; }
+  .today-item { text-align:center; }
+
+  /* Grid 2 col */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
+
+  /* Card */
+  .card { background:#18181b; border:1px solid #27272a; border-radius:12px; padding:20px; }
+  .card h3 { font-size:13px; color:#71717a; margin-bottom:14px; text-transform:uppercase; letter-spacing:.3px; }
+
+  /* Chart placeholder */
+  .chart-placeholder { height:180px; background:linear-gradient(180deg,rgba(139,92,246,.08),transparent); border-radius:8px; display:flex; align-items:flex-end; justify-content:space-around; padding:0 12px 12px; }
+  .chart-bar { background:linear-gradient(180deg,#8b5cf6,#6d28d9); border-radius:4px 4px 0 0; width:28px; }
+
+  /* Table */
+  .mini-table { width:100%; font-size:12px; }
+  .mini-table th { text-align:left; color:#52525b; padding:0 0 10px; font-weight:500; }
+  .mini-table td { padding:8px 0; border-top:1px solid #1f1f23; }
+  .mini-table .rank { color:#8b5cf6; font-weight:600; width:30px; }
+
+  /* Alerts */
+  .alert-row { display:flex; gap:12px; margin-bottom:24px; }
+  .alert { flex:1; padding:14px 18px; border-radius:10px; font-size:13px; display:flex; align-items:center; gap:10px; }
+  .alert.red { background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3); color:#fca5a5; }
+  .alert.yellow { background:rgba(234,179,8,.1); border:1px solid rgba(234,179,8,.3); color:#fde047; }
+  .alert.green { background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3); color:#86efac; }
+  .alert-count { font-size:22px; font-weight:700; }
+
+  /* Objetivos */
+  .obj { margin-bottom:14px; }
+  .obj .obj-header { display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; }
+  .obj .obj-header .name { color:#a1a1aa; }
+  .obj .obj-header .pct { color:#a78bfa; font-weight:600; }
+  .obj-bar { height:6px; background:#27272a; border-radius:3px; overflow:hidden; }
+  .obj-bar-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#6d28d9,#8b5cf6); }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <h1><span>7</span>ROMS</h1>
+    <p>CRM Dashboard</p>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="section-label">Principal</div>
+    <a href="#" class="active">📊 Dashboard</a>
+    <a href="#">📅 Hoy</a>
+    <a href="#">📞 CRM Llamadas</a>
+    <div class="section-label">Gestión</div>
+    <a href="#">👥 Alumnos</a>
+    <a href="#">💳 Cuotas & Cobros</a>
+    <a href="#">💰 Finanzas</a>
+    <div class="section-label">Equipo</div>
+    <a href="#">🏆 Leaderboard</a>
+    <a href="#">🎯 Objetivos</a>
+    <div class="section-label">Config</div>
+    <a href="#">⚙️ Admin</a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="name">Juanma Wohl</div>
+    <div class="role">Admin</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="header">
+    <h2>Dashboard General</h2>
+    <div class="month-filter">
+      <div class="today-badge">Hoy: $3,000</div>
+      <select>
+        <option>Abril 2026</option>
+        <option>Marzo 2026</option>
+        <option>Febrero 2026</option>
+        <option>Enero 2026</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Today Strip -->
+  <div class="today-strip">
+    <div class="today-item">
+      <h3>Ingreso Hoy</h3>
+      <div class="big">$3,000</div>
+      <div class="detail">1 pago — Sinziana Lacob</div>
+    </div>
+    <div class="today-item">
+      <h3>Llamadas Hoy</h3>
+      <div class="big" style="color:#a78bfa;">4</div>
+      <div class="detail">2 pendientes · 1 presentada · 1 no show</div>
+    </div>
+    <div class="today-item">
+      <h3>Cash Collected Mes</h3>
+      <div class="big">$25,134</div>
+      <div class="detail">vs objetivo: $45,000 (55.9%)</div>
+    </div>
+    <div class="today-item">
+      <h3>Resultado Neto</h3>
+      <div class="big">$18,734</div>
+      <div class="detail">Gastos mes: $6,400</div>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div class="alert-row">
+    <div class="alert red">
+      <span class="alert-count">3</span> Cuotas vencidas
+    </div>
+    <div class="alert yellow">
+      <span class="alert-count">5</span> Alumnos próximos a vencer (7 días)
+    </div>
+    <div class="alert green">
+      <span class="alert-count">12</span> Alumnos activos
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="label">Llamadas Mes</div>
+      <div class="value">47</div>
+      <div class="sub">17 este mes</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Presentadas</div>
+      <div class="value purple">28</div>
+      <div class="sub">59.6% show up</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Cerradas</div>
+      <div class="value green">8</div>
+      <div class="sub">28.6% cierre</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Ticket Promedio</div>
+      <div class="value purple">$3,104</div>
+      <div class="sub">Upfront: 5 · Cuotas: 3</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Comisiones Mes</div>
+      <div class="value yellow">$3,770</div>
+      <div class="sub">Closers: $2,513 · Setters: $1,257</div>
+    </div>
+  </div>
+
+  <!-- Charts + Tables -->
+  <div class="grid-2">
+    <div class="card">
+      <h3>Cash Collected por Mes</h3>
+      <div class="chart-placeholder">
+        <div class="chart-bar" style="height:30%"></div>
+        <div class="chart-bar" style="height:55%"></div>
+        <div class="chart-bar" style="height:45%"></div>
+        <div class="chart-bar" style="height:75%"></div>
+        <div class="chart-bar" style="height:60%"></div>
+        <div class="chart-bar" style="height:90%"></div>
+        <div class="chart-bar" style="height:40%;opacity:.5;border:1px dashed #8b5cf6;background:transparent;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🏆 Top Closers — Abril</h3>
+      <table class="mini-table">
+        <tr><th></th><th>Closer</th><th style="text-align:right">Cash</th><th style="text-align:right">Cierre</th><th style="text-align:right">Comisión</th></tr>
+        <tr><td class="rank">🥇</td><td>Valentino</td><td style="text-align:right;color:#22c55e">$25,134</td><td style="text-align:right">28.6%</td><td style="text-align:right;color:#eab308">$2,513</td></tr>
+        <tr><td class="rank">🥈</td><td>Benicio</td><td style="text-align:right;color:#22c55e">$0</td><td style="text-align:right">0%</td><td style="text-align:right;color:#eab308">$0</td></tr>
+        <tr><td class="rank">🥉</td><td>Axel</td><td style="text-align:right;color:#22c55e">$500</td><td style="text-align:right">50%</td><td style="text-align:right;color:#eab308">$50</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>🎯 Objetivos del Mes</h3>
+      <div class="obj">
+        <div class="obj-header"><span class="name">Cash Collected</span><span class="pct">55.9%</span></div>
+        <div class="obj-bar"><div class="obj-bar-fill" style="width:55.9%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#52525b;margin-top:3px"><span>$25,134</span><span>$45,000</span></div>
+      </div>
+      <div class="obj">
+        <div class="obj-header"><span class="name">Llamadas Tomadas</span><span class="pct">34%</span></div>
+        <div class="obj-bar"><div class="obj-bar-fill" style="width:34%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#52525b;margin-top:3px"><span>17</span><span>50</span></div>
+      </div>
+      <div class="obj">
+        <div class="obj-header"><span class="name">Alumnos Nuevos</span><span class="pct">80%</span></div>
+        <div class="obj-bar"><div class="obj-bar-fill" style="width:80%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#52525b;margin-top:3px"><span>8</span><span>10</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>💳 Próximas Cuotas</h3>
+      <table class="mini-table">
+        <tr><th>Alumno</th><th>Cuota</th><th style="text-align:right">Monto</th><th>Vence</th></tr>
+        <tr><td>Pifeta</td><td style="color:#ef4444">2/3</td><td style="text-align:right">$7,000</td><td style="color:#ef4444">Vencida (3 días)</td></tr>
+        <tr><td>Touch Gummy</td><td style="color:#eab308">2/3</td><td style="text-align:right">$4,000</td><td style="color:#eab308">En 5 días</td></tr>
+        <tr><td>Sinziana</td><td style="color:#22c55e">2/3</td><td style="text-align:right">$7,000</td><td style="color:#22c55e">En 25 días</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

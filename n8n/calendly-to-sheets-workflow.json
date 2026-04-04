@@ -1,0 +1,151 @@
+{
+  "name": "Calendly → ROMS CRM Sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "calendly-webhook",
+        "responseMode": "onReceived",
+        "responseData": "allEntries"
+      },
+      "id": "webhook-trigger",
+      "name": "Calendly Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "calendly-roms-crm"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.event }}",
+              "operation": "equals",
+              "value2": "invitee.created"
+            }
+          ]
+        }
+      },
+      "id": "filter-created",
+      "name": "Filter: New Booking",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract relevant fields from Calendly webhook payload\nconst payload = $input.first().json.payload;\nconst invitee = payload.invitee || {};\nconst event = payload.event || {};\nconst questions = payload.questions_and_answers || [];\nconst tracking = payload.tracking || {};\n\n// ── Closer assignment from Calendly account ──\n// Each Calendly account belongs to one closer.\n// event_memberships contains the host's user URI with their UUID.\nconst CLOSER_MAP = {\n  'c983b509-df1c-4661-aad5-8fb7bf40f8c4': 'Juan Martín',\n  '908bf103-caf3-4476-92f6-4083ad615ab8': 'Agustín',\n};\n\nlet closer = '';\nconst memberships = event.event_memberships || [];\nfor (const m of memberships) {\n  const userUri = m.user || '';\n  for (const [uuid, name] of Object.entries(CLOSER_MAP)) {\n    if (userUri.includes(uuid)) {\n      closer = name;\n      break;\n    }\n  }\n  if (closer) break;\n}\n// Fallback: check event_type owner too\nif (!closer) {\n  const eventTypeUri = (payload.event_type?.uri || event.uri || '');\n  for (const [uuid, name] of Object.entries(CLOSER_MAP)) {\n    if (eventTypeUri.includes(uuid)) {\n      closer = name;\n      break;\n    }\n  }\n}\n\n// ── UTM params ──\nconst utmSource = tracking.utm_source || '';\nconst utmMedium = tracking.utm_medium || '';\nconst utmCampaign = tracking.utm_campaign || '';\n\n// Extract setter from utm_campaign (format: setter_campaign or just setter)\nconst setter = utmCampaign.includes('_') ? utmCampaign.split('_')[0] : utmCampaign;\n\n// ── Event date ──\nconst startTime = event.start_time ? new Date(event.start_time) : new Date();\nconst fechaAgenda = startTime.toISOString().split('T')[0];\nconst today = new Date();\nconst mes = `${today.getFullYear()}-${today.getMonth() + 1}`;\n\n// ── Custom questions ──\nconst igQuestion = questions.find(q => \n  q.question.toLowerCase().includes('instagram') ||\n  q.question.toLowerCase().includes('ig')\n);\nconst instagram = igQuestion ? igQuestion.answer : '';\n\nconst contextQuestion = questions.find(q => \n  q.question.toLowerCase().includes('contexto') ||\n  q.question.toLowerCase().includes('nota') ||\n  q.question.toLowerCase().includes('comentario') ||\n  q.question.toLowerCase().includes('tell us')\n);\nconst contextoSetter = contextQuestion ? contextQuestion.answer : '';\n\nreturn [{\n  json: {\n    nombre: invitee.name || '',\n    instagram: instagram,\n    fechaLlamada: '',\n    fechaAgenda: fechaAgenda,\n    setter: setter,\n    closer: closer,\n    estado: '',\n    sePresentó: '',\n    calificado: '',\n    programa: '',\n    contextoSetter: contextoSetter,\n    contextoCloser: '',\n    cashDia1: '',\n    cashTotal: '',\n    ticketTotal: '',\n    planPago: '',\n    pago1: '',\n    estadoPago1: '',\n    pago2: '',\n    estadoPago2: '',\n    pago3: '',\n    estadoPago3: '',\n    saldoPendiente: '',\n    fechaPago1: '',\n    metodoPago: '',\n    fuente: utmSource,\n    medioAgenda: utmMedium,\n    email: invitee.email || '',\n    telefono: '',\n    mes: mes,\n    calendlyEventUri: event.uri || '',\n    calendlyInviteeUri: invitee.uri || '',\n    eventTypeName: payload.event_type?.name || ''\n  }\n}];"
+      },
+      "id": "transform-data",
+      "name": "Transform Calendly Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "14l6eg-JfY5M00NRSmOT-38f5eRsC0xsOqZl9bsggDv4",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "📞 Registro Calls"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nombre": "={{ $json.nombre }}",
+            "Instagram": "={{ $json.instagram }}",
+            "FechaLlamada": "={{ $json.fechaLlamada }}",
+            "FechaAgenda": "={{ $json.fechaAgenda }}",
+            "Setter": "={{ $json.setter }}",
+            "Closer": "={{ $json.closer }}",
+            "Estado": "={{ $json.estado }}",
+            "SePresentó": "={{ $json.sePresentó }}",
+            "Calificado": "={{ $json.calificado }}",
+            "Programa": "={{ $json.programa }}",
+            "ContextoSetter": "={{ $json.contextoSetter }}",
+            "ContextoCloser": "={{ $json.contextoCloser }}",
+            "CashDía1": "={{ $json.cashDia1 }}",
+            "CashTotal": "={{ $json.cashTotal }}",
+            "TicketTotal": "={{ $json.ticketTotal }}",
+            "PlanPago": "={{ $json.planPago }}",
+            "Pago1": "={{ $json.pago1 }}",
+            "EstadoP1": "={{ $json.estadoPago1 }}",
+            "Pago2": "={{ $json.pago2 }}",
+            "EstadoP2": "={{ $json.estadoPago2 }}",
+            "Pago3": "={{ $json.pago3 }}",
+            "EstadoP3": "={{ $json.estadoPago3 }}",
+            "SaldoPendiente": "={{ $json.saldoPendiente }}",
+            "FechaPago1": "={{ $json.fechaPago1 }}",
+            "MétodoPago": "={{ $json.metodoPago }}",
+            "Fuente": "={{ $json.fuente }}",
+            "MedioAgenda": "={{ $json.medioAgenda }}",
+            "Email": "={{ $json.email }}",
+            "Teléfono": "={{ $json.telefono }}",
+            "Mes": "={{ $json.mes }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "sheets-append",
+      "name": "Append to Registro Calls",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [900, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets - ROMS CRM"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Calendly Webhook": {
+      "main": [
+        [
+          {
+            "node": "Filter: New Booking",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter: New Booking": {
+      "main": [
+        [
+          {
+            "node": "Transform Calendly Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Calendly Data": {
+      "main": [
+        [
+          {
+            "node": "Append to Registro Calls",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "roms-crm-local"
+  }
+}
