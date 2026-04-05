@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import { Llamada, Seguimiento, AuthSession } from "@/lib/types";
 import { isCerrado, calculateLeadScore, formatUSD } from "@/lib/data";
 import { TEAM } from "@/lib/constants";
+import LeadDetailPanel from "./LeadDetailPanel";
 
 interface Props {
   llamadas: Llamada[];
@@ -198,62 +199,12 @@ export default function PipelineClient({ llamadas, seguimientos, session, isAdmi
         })}
       </div>
 
-      {/* Lead Detail Panel (placeholder for Task B5) */}
+      {/* Lead Detail Panel */}
       {selectedLead && (
-        <div className="fixed inset-y-0 right-0 w-full max-w-md bg-card-bg border-l border-card-border shadow-2xl z-50 overflow-y-auto">
-          <div className="p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold">{selectedLead.nombre}</h2>
-              <button
-                onClick={() => setSelectedLead(null)}
-                className="text-muted hover:text-foreground text-xl p-1"
-              >
-                &times;
-              </button>
-            </div>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted">Estado</span>
-                <span>{selectedLead.estado}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted">Closer</span>
-                <span>{selectedLead.closer}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted">Setter</span>
-                <span>{selectedLead.setter}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted">Lead Score</span>
-                <LeadScoreBadge score={calculateLeadScore(selectedLead)} />
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted">Instagram</span>
-                <span>{selectedLead.instagram || "—"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted">Cash Día 1</span>
-                <span className="text-green">{formatUSD(selectedLead.cashDia1)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted">Programa</span>
-                <span>{selectedLead.programa || "—"}</span>
-              </div>
-              <hr className="border-card-border" />
-              <p className="text-xs text-muted text-center py-4">
-                Panel completo próximamente (Task B5)
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Overlay when panel is open */}
-      {selectedLead && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40"
-          onClick={() => setSelectedLead(null)}
+        <LeadDetailPanel
+          lead={selectedLead}
+          seguimientos={seguimientos.filter(s => s.leadRowIndex === selectedLead.rowIndex)}
+          onClose={() => setSelectedLead(null)}
         />
       )}
     </div>
