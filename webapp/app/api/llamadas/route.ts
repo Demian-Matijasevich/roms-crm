@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { appendCallResult } from "@/lib/sheets";
 import { requireSession } from "@/lib/auth";
+import { llamadaSchema } from "@/lib/schemas";
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,38 +11,23 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const {
-      rowIndex,
-      estado,
-      sePresentó,
-      calificado,
-      programa,
-      contextoCloser,
-      cashDia1,
-      planPago,
-      pago1,
-      metodoPago,
-    } = body;
-
-    if (!rowIndex || typeof rowIndex !== "number") {
-      return NextResponse.json({ error: "rowIndex requerido" }, { status: 400 });
+    const parsed = llamadaSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.issues[0]?.message || "Datos inválidos" }, { status: 400 });
     }
-
-    if (!estado) {
-      return NextResponse.json({ error: "estado requerido" }, { status: 400 });
-    }
+    const { rowIndex, estado, sePresentó, calificado, programa, contextoCloser, cashDia1, planPago, pago1, metodoPago } = parsed.data;
 
     await appendCallResult(
       {
-        estado: estado ?? "",
-        sePresentó: sePresentó ?? "",
-        calificado: calificado ?? "",
-        programa: programa ?? "",
-        contextoCloser: contextoCloser ?? "",
-        cashDia1: typeof cashDia1 === "number" ? cashDia1 : 0,
-        planPago: planPago ?? "",
-        pago1: typeof pago1 === "number" ? pago1 : 0,
-        metodoPago: metodoPago ?? "",
+        estado,
+        sePresentó,
+        calificado,
+        programa,
+        contextoCloser,
+        cashDia1,
+        planPago,
+        pago1,
+        metodoPago,
       },
       rowIndex
     );

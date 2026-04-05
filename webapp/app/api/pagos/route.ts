@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { appendPayment } from "@/lib/sheets";
 import { requireSession } from "@/lib/auth";
+import { pagoSchema } from "@/lib/schemas";
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,47 +11,12 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const {
-      fecha,
-      producto,
-      nombre,
-      telefono,
-      monto,
-      closer,
-      setter,
-      comprobante,
-      concepto,
-      receptor,
-      fuente,
-      mes,
-    } = body;
-
-    if (!nombre) {
-      return NextResponse.json({ error: "nombre requerido" }, { status: 400 });
+    const parsed = pagoSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.issues[0]?.message || "Datos inválidos" }, { status: 400 });
     }
 
-    if (!concepto) {
-      return NextResponse.json({ error: "concepto requerido" }, { status: 400 });
-    }
-
-    if (typeof monto !== "number" || monto <= 0) {
-      return NextResponse.json({ error: "monto debe ser mayor a 0" }, { status: 400 });
-    }
-
-    await appendPayment({
-      fecha: fecha ?? "",
-      producto: producto ?? "",
-      nombre: nombre ?? "",
-      telefono: telefono ?? "",
-      monto: typeof monto === "number" ? monto : 0,
-      closer: closer ?? "",
-      setter: setter ?? "",
-      comprobante: comprobante ?? "",
-      concepto: concepto ?? "",
-      receptor: receptor ?? "",
-      fuente: fuente ?? "",
-      mes: mes ?? "",
-    });
+    await appendPayment(parsed.data);
 
     return NextResponse.json({ ok: true });
   } catch (err: unknown) {

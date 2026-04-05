@@ -4,6 +4,7 @@ import { google } from "googleapis";
 import path from "path";
 import { SPREADSHEET_ID } from "@/lib/constants";
 import { requireSession } from "@/lib/auth";
+import { reporteSetterSchema } from "@/lib/schemas";
 
 function getAuth() {
   const scopes = ["https://www.googleapis.com/auth/spreadsheets"];
@@ -30,32 +31,11 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const {
-      fecha,
-      setter,
-      conversacionesIniciadas,
-      respuestasHistorias,
-      calendariosEnviados,
-      notas,
-    } = body;
-
-    // Validations
-    if (!fecha) {
-      return NextResponse.json({ error: "Fecha requerida" }, { status: 400 });
+    const parsed = reporteSetterSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.issues[0]?.message || "Datos inválidos" }, { status: 400 });
     }
-    if (!setter) {
-      return NextResponse.json({ error: "Setter requerido" }, { status: 400 });
-    }
-    if (
-      typeof conversacionesIniciadas !== "number" ||
-      typeof respuestasHistorias !== "number" ||
-      typeof calendariosEnviados !== "number"
-    ) {
-      return NextResponse.json(
-        { error: "Valores numéricos requeridos" },
-        { status: 400 }
-      );
-    }
+    const { fecha, setter, conversacionesIniciadas, respuestasHistorias, calendariosEnviados, notas } = parsed.data;
 
     const sheets = getSheets();
 
@@ -73,7 +53,7 @@ export async function POST(req: NextRequest) {
             conversacionesIniciadas,
             respuestasHistorias,
             calendariosEnviados,
-            notas || "",
+            notas,
           ]],
         },
       });

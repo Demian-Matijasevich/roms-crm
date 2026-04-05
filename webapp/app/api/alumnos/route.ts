@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateCallFields } from "@/lib/sheets";
 import { requireSession } from "@/lib/auth";
+import { alumnoUpdateSchema } from "@/lib/schemas";
 
 const EDITABLE_FIELDS = [
   "nombre", "instagram", "closer", "setter", "programa",
@@ -15,15 +16,12 @@ export async function PUT(req: NextRequest) {
     if ("error" in auth) return auth.error;
 
     const body = await req.json();
-    const { rowIndex, fields } = body;
 
-    if (!rowIndex || typeof rowIndex !== "number") {
-      return NextResponse.json({ error: "rowIndex requerido" }, { status: 400 });
+    const parsed = alumnoUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
     }
-
-    if (!fields || typeof fields !== "object" || Object.keys(fields).length === 0) {
-      return NextResponse.json({ error: "fields requerido" }, { status: 400 });
-    }
+    const { rowIndex, fields } = parsed.data;
 
     // Only allow editable fields
     const safe: Record<string, string | number> = {};

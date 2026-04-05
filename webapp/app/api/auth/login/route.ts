@@ -1,9 +1,14 @@
 // webapp/app/api/auth/login/route.ts
 import { NextResponse } from "next/server";
 import { findUser, createSessionToken } from "@/lib/auth";
+import { loginSchema } from "@/lib/schemas";
 
 export async function POST(request: Request) {
-  const { nombre, pin } = await request.json();
+  const parsed = loginSchema.safeParse(await request.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
+  }
+  const { nombre, pin } = parsed.data;
   const user = findUser(nombre, pin);
 
   if (!user) {
