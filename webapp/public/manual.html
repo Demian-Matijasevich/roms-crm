@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual de Uso — 7ROMS CRM</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #0d0d0f; color: #e5e5e5; line-height: 1.6; }
+    .container { max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+    h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+    h1 span { color: #8b5cf6; }
+    h2 { font-size: 1.25rem; font-weight: 600; margin-top: 40px; margin-bottom: 16px; color: #a78bfa; border-bottom: 1px solid #27272a; padding-bottom: 8px; }
+    h3 { font-size: 1rem; font-weight: 600; margin-top: 24px; margin-bottom: 8px; }
+    p { margin-bottom: 12px; color: #a1a1aa; }
+    .subtitle { color: #71717a; font-size: 0.875rem; margin-bottom: 32px; }
+    .card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .card-title { font-weight: 600; font-size: 0.875rem; margin-bottom: 8px; color: #e5e5e5; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 500; }
+    .badge-admin { background: #8b5cf620; color: #a78bfa; border: 1px solid #8b5cf630; }
+    .badge-closer { background: #22c55e20; color: #22c55e; border: 1px solid #22c55e30; }
+    .badge-setter { background: #eab30820; color: #eab308; border: 1px solid #eab30830; }
+    ul { padding-left: 20px; margin-bottom: 12px; }
+    li { margin-bottom: 6px; color: #a1a1aa; }
+    li strong { color: #e5e5e5; }
+    .step { display: flex; gap: 12px; margin-bottom: 16px; }
+    .step-num { width: 28px; height: 28px; border-radius: 50%; background: #8b5cf6; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+    .step-content { flex: 1; }
+    .step-content p { margin-bottom: 4px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 0.875rem; }
+    th { text-align: left; padding: 8px 12px; background: #111113; color: #71717a; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #27272a; }
+    td { padding: 8px 12px; border-bottom: 1px solid #27272a; color: #a1a1aa; }
+    .kb { background: #27272a; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-family: monospace; color: #e5e5e5; }
+    .divider { border: none; border-top: 1px solid #27272a; margin: 32px 0; }
+    .footer { text-align: center; color: #71717a; font-size: 0.75rem; margin-top: 48px; padding-top: 24px; border-top: 1px solid #27272a; }
+    @media print {
+      body { background: white; color: #111; }
+      .card { border-color: #ddd; }
+      p, li, td { color: #333; }
+      h2 { color: #6d28d9; }
+      .badge-admin { background: #f3e8ff; color: #6d28d9; }
+      .badge-closer { background: #dcfce7; color: #166534; }
+      .badge-setter { background: #fef9c3; color: #854d0e; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><span>7</span>ROMS CRM</h1>
+    <p class="subtitle">Manual de uso — v2.1 | Abril 2026</p>
+
+    <!-- INTRO -->
+    <h2>Que es el CRM</h2>
+    <p>El CRM de 7ROMS es una aplicacion web que centraliza toda la operacion de ventas: llamadas, alumnos, pagos, comisiones y metricas del equipo. Se conecta en tiempo real con Google Sheets y Calendly.</p>
+    <p>Funciona desde el celular (como PWA) y desde cualquier navegador.</p>
+
+    <!-- ACCESO -->
+    <h2>Acceso</h2>
+    <div class="card">
+      <p class="card-title">Como entrar</p>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content"><p><strong>Abri la app</strong> desde el link que te compartieron o desde el icono en tu celular.</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content"><p><strong>Selecciona tu nombre</strong> en el dropdown.</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content"><p><strong>Ingresa tu PIN</strong> de 4 digitos y dale a "Entrar".</p></div>
+      </div>
+    </div>
+
+    <h3>Roles</h3>
+    <table>
+      <thead>
+        <tr><th>Rol</th><th>Acceso</th><th>PIN</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="badge badge-admin">Admin</span></td><td>Todo: dashboard, llamadas, alumnos, finanzas, leaderboard, config</td><td>Consultar con Juanma</td></tr>
+        <tr><td><span class="badge badge-closer">Closer</span></td><td>Su dashboard, sus llamadas, cargar llamada/pago</td><td>Consultar con Juanma</td></tr>
+        <tr><td><span class="badge badge-setter">Setter</span></td><td>Su dashboard, UTM builder, reporte diario</td><td>Consultar con Juanma</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Instalar como app en el celular</h3>
+    <div class="card">
+      <p><strong>iPhone:</strong> Abri Safari > icono de compartir > "Agregar a inicio"</p>
+      <p><strong>Android:</strong> Abri Chrome > menu de 3 puntos > "Agregar a pantalla de inicio"</p>
+      <p>Esto crea un icono como si fuera una app nativa.</p>
+    </div>
+
+    <!-- SECCIONES -->
+    <h2>Secciones de la App</h2>
+
+    <h3>Dashboard</h3>
+    <div class="card">
+      <p>Vista principal con todas las metricas del mes. Incluye:</p>
+      <ul>
+        <li><strong>Ingreso Hoy</strong> — cuanto entro hoy en ventas</li>
+        <li><strong>Cash Collected</strong> — total del mes con comparativa vs mes anterior</li>
+        <li><strong>5 KPIs</strong> — llamadas, presentadas, cerradas, ticket promedio, comisiones</li>
+        <li><strong>Cash Diario</strong> — vista semanal con navegacion</li>
+        <li><strong>Analytics por Fuente</strong> — que canal trae mas plata (solo admin)</li>
+        <li><strong>Comisiones por Empleado</strong> — desglose individual (solo admin)</li>
+        <li><strong>Leaderboard mini</strong> — top 3 closers del mes</li>
+        <li><strong>Objetivos</strong> — barras de progreso hacia las metas</li>
+        <li><strong>Proximas Cuotas</strong> — pagos pendientes</li>
+      </ul>
+      <p>Usa el <strong>selector de mes</strong> (arriba a la derecha) para ver metricas de meses anteriores.</p>
+    </div>
+
+    <h3>CRM Llamadas</h3>
+    <div class="card">
+      <p>Tabla con todas las llamadas registradas. Muestra nombre, fecha, closer, setter, estado, programa, cash y saldo pendiente.</p>
+      <ul>
+        <li>Filtrar por <strong>estado</strong> con las pestanas</li>
+        <li>Buscar por <strong>nombre, closer o setter</strong></li>
+        <li>Al final tiene un <strong>total de cash y saldo</strong></li>
+        <li>Los closers solo ven sus propias llamadas</li>
+      </ul>
+    </div>
+
+    <h3>Alumnos</h3>
+    <div class="card">
+      <p>Lista de todos los alumnos activos (deals cerrados). Muestra programa, vencimiento, dias restantes y saldo.</p>
+      <ul>
+        <li>Filtrar por <strong>Activo, Por vencer, Vencido</strong></li>
+        <li>Boton <strong>"Editar"</strong> para modificar datos: nombre, Instagram, email, telefono, programa, closer, setter, cash, saldo</li>
+        <li>Los cambios se guardan directo en el Google Sheet</li>
+      </ul>
+    </div>
+
+    <h3>Cuotas & Cobros</h3>
+    <div class="card">
+      <p>Vista de todas las cuotas pendientes de los alumnos que pagan en cuotas. Muestra estado (pagada, pendiente, vencida, proxima) y montos.</p>
+    </div>
+
+    <h3>Finanzas</h3>
+    <div class="card">
+      <p>Estado financiero completo del mes:</p>
+      <ul>
+        <li><strong>P&L</strong> — ingresos vs gastos = resultado neto</li>
+        <li><strong>Comisiones por empleado</strong> — desglose de closers (10%) y setters (5%)</li>
+        <li><strong>Gastos por categoria</strong> — agrupados automaticamente</li>
+      </ul>
+    </div>
+
+    <h3>Leaderboard</h3>
+    <div class="card">
+      <p>Ranking del equipo con tarjetas individuales y tablas comparativas.</p>
+      <ul>
+        <li><strong>Closers:</strong> cash, llamadas, cerradas, show-up, ticket, comision</li>
+        <li><strong>Setters:</strong> agendas, cerradas, calificadas, presentadas, comision</li>
+        <li>Click en una tarjeta para <strong>filtrar</strong> y ver solo esa persona</li>
+      </ul>
+    </div>
+
+    <!-- FORMULARIOS -->
+    <h2>Cargar Datos</h2>
+
+    <h3>Cargar Llamada (Closers)</h3>
+    <div class="card">
+      <p>Despues de cada llamada de venta, el closer carga el resultado:</p>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content"><p>Seleccionar el <strong>lead agendado</strong> de la lista</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content"><p>Completar: estado, si se presento, si esta calificado, programa, contexto</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content"><p>Si cerro: cash dia 1, plan de pago, monto cuota 1, metodo de pago</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content"><p>Click en <strong>"Guardar resultado"</strong></p></div>
+      </div>
+    </div>
+
+    <h3>Cargar Pago (Closers)</h3>
+    <div class="card">
+      <p>Para registrar pagos de cuotas de alumnos existentes:</p>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content"><p><strong>Buscar al alumno</strong> por nombre, programa o closer</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content"><p>Completar: concepto (Cuota 2, 3, etc.), fecha, monto, metodo, quien recibe, comprobante</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content"><p>Click en <strong>"Registrar pago"</strong></p></div>
+      </div>
+    </div>
+
+    <h3>UTM Builder (Setters)</h3>
+    <div class="card">
+      <p>Herramienta para generar links de Calendly con parametros UTM de tracking.</p>
+      <ul>
+        <li>Seleccionar un <strong>Calendly</strong> de la lista de conectados</li>
+        <li>Completar <strong>fuente</strong> (Instagram, WhatsApp, etc.)</li>
+        <li>Completar <strong>medio</strong> (DM, stories, etc.)</li>
+        <li>El <strong>setter</strong> se autocompleta con tu nombre</li>
+        <li>Click en <strong>"Copiar URL"</strong> y usar ese link para agendar</li>
+      </ul>
+      <p>Los UTM se capturan automaticamente cuando alguien agenda, y aparecen en el CRM.</p>
+    </div>
+
+    <h3>Reporte Diario (Setters)</h3>
+    <div class="card">
+      <p>Formulario rapido para que los setters reporten su actividad diaria.</p>
+    </div>
+
+    <!-- AUTOMATIZACIONES -->
+    <h2>Automatizaciones</h2>
+    <div class="card">
+      <p class="card-title">Calendly → Google Sheets (via n8n)</p>
+      <p>Cuando alguien agenda una llamada en Calendly, automaticamente:</p>
+      <ul>
+        <li>Se crea una <strong>fila nueva</strong> en el Sheet "Registro Calls"</li>
+        <li>Se asigna el <strong>closer</strong> segun de quien es el Calendly</li>
+        <li>Se capturan los <strong>UTMs</strong> (setter, fuente, medio)</li>
+        <li>Se extrae el <strong>Instagram</strong> y contexto de las preguntas del formulario</li>
+      </ul>
+      <p>No hay que hacer nada manual — la fila aparece sola.</p>
+    </div>
+
+    <!-- FAQ -->
+    <h2>Preguntas Frecuentes</h2>
+    <div class="card">
+      <p class="card-title">Los datos se actualizan solos?</p>
+      <p>Si. Los datos vienen de Google Sheets en tiempo real. Cada vez que recargas la pagina, ves los datos actuales. Si alguien edita el Sheet directo, tambien se refleja.</p>
+    </div>
+    <div class="card">
+      <p class="card-title">Puedo editar datos desde la app?</p>
+      <p>Si. En la seccion de Alumnos podes hacer click en "Editar" para modificar campos. En los formularios de llamada y pago creas registros nuevos. Todo se guarda directo en el Sheet.</p>
+    </div>
+    <div class="card">
+      <p class="card-title">Como veo mis comisiones?</p>
+      <p>En el Dashboard (si sos admin, se ven todas). Tambien en Finanzas > Comisiones por Empleado. Closer = 10% del cash, Setter = 5% del cash.</p>
+    </div>
+    <div class="card">
+      <p class="card-title">El link de Calendly que mando tiene que ser especial?</p>
+      <p>Si. Usa siempre el <strong>UTM Builder</strong> de la app para generar el link. Asi se trackea automaticamente quien te mando el lead y de donde viene.</p>
+    </div>
+
+    <hr class="divider">
+
+    <p class="footer">
+      7ROMS CRM v2.1 — Desarrollado para Fran Castro & Juan Martin Wohl<br>
+      Para soporte contactar a Matias
+    </p>
+  </div>
+</body>
+</html>

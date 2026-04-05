@@ -55,6 +55,7 @@ export interface Gasto {
 }
 
 export interface Alumno {
+  rowIndex: number;
   nombre: string;
   programa: string;
   fechaPrimerPago: string;
@@ -64,6 +65,12 @@ export interface Alumno {
   closer: string;
   setter: string;
   diasRestantes: number;
+  instagram: string;
+  email: string;
+  telefono: string;
+  cashTotal: number;
+  saldoPendiente: number;
+  planPago: string;
 }
 
 export interface CloserStats {

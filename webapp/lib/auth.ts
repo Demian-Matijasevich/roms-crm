@@ -10,6 +10,7 @@ export function findUser(nombre: string, pin: string) {
     "Valentino": "1234",
     "Agustín": "1234",
     "Juan Martín": "1234",
+    "Fede": "1234",
     "Guille": "1234",
     "Juanma": "0000",
     "Fran": "0000",

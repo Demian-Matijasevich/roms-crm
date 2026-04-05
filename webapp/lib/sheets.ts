@@ -148,20 +148,53 @@ export async function appendPayment(data: {
   setter: string;
   comprobante: string;
   concepto: string;
+  receptor: string;
   fuente: string;
   mes: string;
 }): Promise<void> {
   const sheets = getSheets(false);
   await sheets.spreadsheets.values.append({
     spreadsheetId: SPREADSHEET_ID,
-    range: "'💳 Registro de Pagos'!A:K",
+    range: "'💳 Registro de Pagos'!A:L",
     valueInputOption: "RAW",
     requestBody: {
       values: [[
         data.fecha, data.producto, data.nombre, data.telefono,
         data.monto, data.closer, data.setter, data.comprobante,
-        data.concepto, data.fuente, data.mes,
+        data.concepto, data.receptor, data.fuente, data.mes,
       ]],
     },
+  });
+}
+
+// Column mapping: field name → column letter in "📞 Registro Calls"
+const CALL_COLUMNS: Record<string, string> = {
+  nombre: "A", instagram: "B", fechaLlamada: "C", fechaAgenda: "D",
+  setter: "E", closer: "F", estado: "G", sePresentó: "H",
+  calificado: "I", programa: "J", contextoSetter: "K", contextoCloser: "L",
+  cashDia1: "M", cashTotal: "N", ticketTotal: "O", planPago: "P",
+  pago1: "Q", estadoPago1: "R", pago2: "S", estadoPago2: "T",
+  pago3: "U", estadoPago3: "V", saldoPendiente: "W", fechaPago1: "X",
+  metodoPago: "Y", fuente: "Z", medioAgenda: "AA", email: "AB",
+  telefono: "AC", mes: "AD",
+};
+
+export async function updateCallFields(
+  rowIndex: number,
+  fields: Record<string, string | number>
+): Promise<void> {
+  const sheets = getSheets(false);
+  const updates = Object.entries(fields)
+    .filter(([key]) => CALL_COLUMNS[key])
+    .map(([key, value]) => ({
+      range: `'📞 Registro Calls'!${CALL_COLUMNS[key]}${rowIndex}`,
+      values: [[value]],
+    }));
+
+  if (updates.length === 0) return;
+
+  await sheets.spreadsheets.values.batchUpdate({
+    spreadsheetId: SPREADSHEET_ID,
+    requestBody: { valueInputOption: "RAW", data: updates },
   });
 }

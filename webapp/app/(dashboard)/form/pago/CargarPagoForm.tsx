@@ -12,6 +12,7 @@ type Step = 1 | 2;
 
 const METODOS_PAGO = ["Transferencia", "Efectivo", "Tarjeta", "Crypto", "Otro"] as const;
 const CONCEPTOS = ["Cuota 2", "Cuota 3", "Pago adicional", "Saldo pendiente", "Otro"] as const;
+const RECEPTORES = ["Juanma", "Fran", "Juan Martín", "Agustín", "Valentino", "Fede"] as const;
 
 const inputClass =
   "w-full bg-background border border-card-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-purple placeholder:text-muted";
@@ -65,6 +66,7 @@ export default function CargarPagoForm({ cerradas }: Props) {
   const [metodo, setMetodo] = useState("");
   const [comprobante, setComprobante] = useState("");
   const [concepto, setConcepto] = useState("");
+  const [receptor, setReceptor] = useState("");
 
   const filtered = useMemo(() => {
     if (!search.trim()) return cerradas;
@@ -112,6 +114,7 @@ export default function CargarPagoForm({ cerradas }: Props) {
       setter: selected.setter,
       comprobante,
       concepto,
+      receptor,
       fuente: selected.fuente,
       mes: getCurrentMes(),
     };
@@ -145,6 +148,7 @@ export default function CargarPagoForm({ cerradas }: Props) {
     setMetodo("");
     setComprobante("");
     setConcepto("");
+    setReceptor("");
     setError("");
     setSubmitted(false);
   }
@@ -351,6 +355,21 @@ export default function CargarPagoForm({ cerradas }: Props) {
                 <option value="">Seleccionar...</option>
                 {METODOS_PAGO.map((m) => (
                   <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Quién recibe */}
+            <div>
+              <label className={labelClass}>Quién recibe el pago</label>
+              <select
+                value={receptor}
+                onChange={(e) => setReceptor(e.target.value)}
+                className={selectClass}
+              >
+                <option value="">Seleccionar...</option>
+                {RECEPTORES.map((r) => (
+                  <option key={r} value={r}>{r}</option>
                 ))}
               </select>
             </div>

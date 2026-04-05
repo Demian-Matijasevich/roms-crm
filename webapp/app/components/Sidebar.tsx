@@ -2,6 +2,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import type { Role } from "@/lib/types";
 
 interface SidebarProps {
@@ -86,6 +87,22 @@ export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const nav = getNav(user.roles);
+  const [open, setOpen] = useState(false);
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
 
   async function handleLogout() {
     document.cookie = "roms_session=; path=/; max-age=0";
@@ -93,13 +110,22 @@ export default function Sidebar({ user }: SidebarProps) {
     router.refresh();
   }
 
-  return (
-    <aside className="fixed left-0 top-0 h-full w-56 bg-[#111113] border-r border-card-border flex flex-col z-50">
-      <div className="px-5 py-5 border-b border-card-border">
-        <h1 className="text-xl font-bold tracking-tight">
-          <span className="text-purple">7</span>ROMS
-        </h1>
-        <p className="text-xs text-muted mt-0.5">CRM Dashboard</p>
+  const sidebarContent = (
+    <>
+      <div className="px-5 py-5 border-b border-card-border flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight">
+            <span className="text-purple">7</span>ROMS
+          </h1>
+          <p className="text-xs text-muted mt-0.5">CRM Dashboard</p>
+        </div>
+        {/* Close button - mobile only */}
+        <button
+          onClick={() => setOpen(false)}
+          className="lg:hidden text-muted hover:text-foreground text-xl p-1"
+        >
+          &times;
+        </button>
       </div>
 
       <nav className="flex-1 px-3 py-3 overflow-y-auto">
@@ -137,6 +163,38 @@ export default function Sidebar({ user }: SidebarProps) {
           </button>
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile top bar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-[#111113] border-b border-card-border flex items-center justify-between px-4 z-40">
+        <button onClick={() => setOpen(true)} className="text-foreground p-1">
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <h1 className="text-lg font-bold tracking-tight">
+          <span className="text-purple">7</span>ROMS
+        </h1>
+        <div className="w-6" />
+      </div>
+
+      {/* Mobile overlay */}
+      {open && (
+        <div className="lg:hidden fixed inset-0 bg-black/60 z-50" onClick={() => setOpen(false)} />
+      )}
+
+      {/* Sidebar - desktop: always visible, mobile: slide in */}
+      <aside className={`
+        fixed left-0 top-0 h-full w-56 bg-[#111113] border-r border-card-border flex flex-col z-50
+        transition-transform duration-200 ease-in-out
+        ${open ? "translate-x-0" : "-translate-x-full"}
+        lg:translate-x-0
+      `}>
+        {sidebarContent}
+      </aside>
+    </>
   );
 }

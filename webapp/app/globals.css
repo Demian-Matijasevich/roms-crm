@@ -41,6 +41,9 @@ body {
 ::-webkit-scrollbar-track { background: var(--background); }
 ::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 3px; }
 
+/* Hide scrollbar but keep scroll */
+.overflow-x-auto::-webkit-scrollbar { height: 0; }
+
 /* Recharts overrides */
 .recharts-cartesian-grid line { stroke: #27272a; }
 .recharts-text { fill: #a1a1aa !important; font-size: 12px; }

@@ -16,6 +16,7 @@ export async function POST(req: NextRequest) {
       setter,
       comprobante,
       concepto,
+      receptor,
       fuente,
       mes,
     } = body;
@@ -42,6 +43,7 @@ export async function POST(req: NextRequest) {
       setter: setter ?? "",
       comprobante: comprobante ?? "",
       concepto: concepto ?? "",
+      receptor: receptor ?? "",
       fuente: fuente ?? "",
       mes: mes ?? "",
     });

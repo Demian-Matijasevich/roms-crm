@@ -16,6 +16,9 @@ function getAccounts(): CalendlyAccount[] {
   if (process.env.CALENDLY_TOKEN_VALENTINO) {
     accounts.push({ name: "Valentino", token: process.env.CALENDLY_TOKEN_VALENTINO });
   }
+  if (process.env.CALENDLY_TOKEN_FEDE) {
+    accounts.push({ name: "Fede", token: process.env.CALENDLY_TOKEN_FEDE });
+  }
   return accounts;
 }
 

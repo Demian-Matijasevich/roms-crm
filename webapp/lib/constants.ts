@@ -15,6 +15,7 @@ export const TEAM: { nombre: string; roles: ("admin" | "closer" | "setter")[] }[
   { nombre: "Valentino", roles: ["closer", "setter"] },
   { nombre: "Agustín", roles: ["closer"] },
   { nombre: "Juan Martín", roles: ["closer"] },
+  { nombre: "Fede", roles: ["closer"] },
   { nombre: "Guille", roles: ["setter"] },
   { nombre: "Juanma", roles: ["admin"] },
   { nombre: "Fran", roles: ["admin"] },

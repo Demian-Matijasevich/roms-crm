@@ -117,6 +117,7 @@ export function getAlumnos(llamadas: Llamada[]): Alumno[] {
     else if (dias <= 15) estado = "Por vencer";
 
     return {
+      rowIndex: l.rowIndex,
       nombre: l.nombre,
       programa: l.programa || "Sin programa",
       fechaPrimerPago: fechaPago,
@@ -126,6 +127,12 @@ export function getAlumnos(llamadas: Llamada[]): Alumno[] {
       closer: l.closer,
       setter: l.setter,
       diasRestantes: Math.max(0, dias),
+      instagram: l.instagram,
+      email: l.email,
+      telefono: l.telefono,
+      cashTotal: l.cashTotal,
+      saldoPendiente: l.saldoPendiente,
+      planPago: l.planPago,
     };
   });
 }

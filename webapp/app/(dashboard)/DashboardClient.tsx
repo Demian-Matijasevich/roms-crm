@@ -184,16 +184,16 @@ export default function DashboardClient({ llamadas, gastos, monthly, session, is
   return (
     <div>
       {/* ── HEADER ── */}
-      <div className="mb-8 flex items-start justify-between">
+      <div className="mb-6 lg:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold">Dashboard</h2>
+          <h2 className="text-xl lg:text-2xl font-bold">Dashboard</h2>
           <p className="text-muted text-sm mt-1">
             {isAdmin ? "Vista Admin" : `Vista de ${session.nombre}`}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <MonthSelector value={mes} onChange={setMes} availableMonths={availableMonths} />
-          <div className="text-right text-xs text-muted">
+          <div className="text-right text-xs text-muted hidden sm:block">
             <p>{new Date().toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" })}</p>
           </div>
         </div>
@@ -310,29 +310,29 @@ export default function DashboardClient({ llamadas, gastos, monthly, session, is
 
       {/* ── WEEKLY CASH VIEW ── */}
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-medium text-muted">Cash Diario — Semana</h3>
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between mb-4 gap-2">
+          <h3 className="text-sm font-medium text-muted whitespace-nowrap">Cash Diario</h3>
+          <div className="flex items-center gap-1 sm:gap-2">
             <button onClick={() => setWeekOffset(weekOffset - 1)}
-              className="text-muted hover:text-foreground text-sm px-2 py-1 rounded border border-card-border hover:border-purple/50 transition-colors">
-              ← Anterior
+              className="text-muted hover:text-foreground text-xs sm:text-sm px-1.5 sm:px-2 py-1 rounded border border-card-border hover:border-purple/50 transition-colors">
+              ←
             </button>
             <button onClick={() => setWeekOffset(0)}
               className="text-xs text-muted hover:text-purple transition-colors px-2 py-1">
               Hoy
             </button>
             <button onClick={() => setWeekOffset(weekOffset + 1)}
-              className="text-muted hover:text-foreground text-sm px-2 py-1 rounded border border-card-border hover:border-purple/50 transition-colors">
-              Siguiente →
+              className="text-muted hover:text-foreground text-xs sm:text-sm px-1.5 sm:px-2 py-1 rounded border border-card-border hover:border-purple/50 transition-colors">
+              →
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-7 gap-2">
+        <div className="flex lg:grid lg:grid-cols-7 gap-2 overflow-x-auto pb-2 snap-x snap-mandatory">
           {weeklyData.map((day) => {
             const isToday = day.dateStr === today;
             return (
               <div key={day.dateStr}
-                className={`bg-card-bg border rounded-xl p-4 text-center transition-colors ${
+                className={`bg-card-bg border rounded-xl p-4 text-center transition-colors min-w-[5.5rem] snap-start ${
                   isToday ? "border-purple/50 bg-purple/5" : "border-card-border"
                 }`}>
                 <p className="text-[10px] text-muted uppercase">{day.dayName}</p>
