@@ -5,9 +5,16 @@ import path from "path";
 import { SPREADSHEET_ID } from "@/lib/constants";
 
 function getAuth() {
+  const scopes = ["https://www.googleapis.com/auth/spreadsheets"];
+
+  if (process.env.GOOGLE_CREDENTIALS) {
+    const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+    return new google.auth.GoogleAuth({ credentials, scopes });
+  }
+
   return new google.auth.GoogleAuth({
     keyFile: path.join(process.cwd(), "credentials.json"),
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+    scopes,
   });
 }
 
