@@ -41,6 +41,27 @@ export interface Llamada {
   email: string;
   telefono: string;
   mes: string;
+  // v3 fields (columns AE-AX)
+  eventoCalendario: string;
+  desdeDonde: string;
+  modeloNegocio: string;
+  objetivo6Meses: string;
+  capacidadInversion: string;
+  leadScore: string;
+  linkLlamada: string;
+  reporteGeneral: string;
+  conceptoPago: string;
+  comprobante1: string;
+  comprobante2: string;
+  comprobante3: string;
+  fechaPago2: string;
+  fechaPago3: string;
+  quienRecibe: string;
+  montoARS: number;
+  fueSeguimiento: string;
+  deDondeVieneLead: string;
+  tagManychat: string;
+  notasInternas: string;
 }
 
 export interface Gasto {
@@ -71,6 +92,11 @@ export interface Alumno {
   cashTotal: number;
   saldoPendiente: number;
   planPago: string;
+  // v3 additions
+  modeloNegocio: string;
+  capacidadInversion: string;
+  leadScore: string;
+  quienRecibe: string;
 }
 
 export interface CloserStats {
@@ -122,6 +148,18 @@ export interface Cuota {
   fechaVencimiento: string;
   estado: "pagada" | "pendiente" | "vencida" | "próxima";
   closer: string;
+}
+
+export interface Seguimiento {
+  rowIndex: number;
+  fecha: string;
+  lead: string;
+  closer: string;
+  tipo: string;
+  nota: string;
+  resultado: string;
+  fechaProximoContacto: string;
+  leadRowIndex: number;
 }
 
 export interface AuthSession {

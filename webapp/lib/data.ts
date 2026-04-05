@@ -133,6 +133,10 @@ export function getAlumnos(llamadas: Llamada[]): Alumno[] {
       cashTotal: l.cashTotal,
       saldoPendiente: l.saldoPendiente,
       planPago: l.planPago,
+      modeloNegocio: l.modeloNegocio,
+      capacidadInversion: l.capacidadInversion,
+      leadScore: calculateLeadScore(l),
+      quienRecibe: l.quienRecibe,
     };
   });
 }
@@ -180,4 +184,21 @@ export function formatUSD(n: number): string {
 
 export function formatPct(n: number): string {
   return `${(n * 100).toFixed(1)}%`;
+}
+
+export function calculateLeadScore(l: Llamada): string {
+  const inversion = l.capacidadInversion.toLowerCase();
+  const modelo = l.modeloNegocio.toLowerCase();
+  const fuente = l.desdeDonde.toLowerCase();
+
+  const siPuedeInvertir = inversion.includes("sí") || inversion.includes("si ");
+  const noPeroConsigue = inversion.includes("no pero") || inversion.includes("puede");
+  const buenModelo = modelo.includes("experto") || modelo.includes("posicionado");
+  const fuenteDirecta = fuente.includes("dm") || fuente.includes("whatsapp") || fuente.includes("instagram");
+
+  if (siPuedeInvertir && buenModelo && fuenteDirecta) return "A+";
+  if (siPuedeInvertir) return "A";
+  if (noPeroConsigue && buenModelo) return "B";
+  if (noPeroConsigue) return "C";
+  return "D";
 }

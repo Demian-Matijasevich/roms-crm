@@ -1,7 +1,7 @@
 // webapp/lib/sheets.ts
 import { google } from "googleapis";
 import path from "path";
-import { Llamada, Gasto } from "./types";
+import { Llamada, Gasto, Seguimiento } from "./types";
 import { SPREADSHEET_ID } from "./constants";
 
 function getAuth(readOnly = true) {
@@ -43,7 +43,7 @@ export async function fetchLlamadas(): Promise<Llamada[]> {
   const sheets = getSheets();
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: SPREADSHEET_ID,
-    range: "'📞 Registro Calls'!A2:AD",
+    range: "'📞 Registro Calls'!A2:AX",
   });
   const rows = (res.data.values || []) as string[][];
 
@@ -79,6 +79,27 @@ export async function fetchLlamadas(): Promise<Llamada[]> {
     email: str(r, 27),
     telefono: str(r, 28),
     mes: str(r, 29),
+    // v3 fields
+    eventoCalendario: str(r, 30),
+    desdeDonde: str(r, 31),
+    modeloNegocio: str(r, 32),
+    objetivo6Meses: str(r, 33),
+    capacidadInversion: str(r, 34),
+    leadScore: str(r, 35),
+    linkLlamada: str(r, 36),
+    reporteGeneral: str(r, 37),
+    conceptoPago: str(r, 38),
+    comprobante1: str(r, 39),
+    comprobante2: str(r, 40),
+    comprobante3: str(r, 41),
+    fechaPago2: str(r, 42),
+    fechaPago3: str(r, 43),
+    quienRecibe: str(r, 44),
+    montoARS: num(r, 45),
+    fueSeguimiento: str(r, 46),
+    deDondeVieneLead: str(r, 47),
+    tagManychat: str(r, 48),
+    notasInternas: str(r, 49),
   }));
 }
 
@@ -177,6 +198,13 @@ const CALL_COLUMNS: Record<string, string> = {
   pago3: "U", estadoPago3: "V", saldoPendiente: "W", fechaPago1: "X",
   metodoPago: "Y", fuente: "Z", medioAgenda: "AA", email: "AB",
   telefono: "AC", mes: "AD",
+  eventoCalendario: "AE", desdeDonde: "AF", modeloNegocio: "AG",
+  objetivo6Meses: "AH", capacidadInversion: "AI", leadScore: "AJ",
+  linkLlamada: "AK", reporteGeneral: "AL", conceptoPago: "AM",
+  comprobante1: "AN", comprobante2: "AO", comprobante3: "AP",
+  fechaPago2: "AQ", fechaPago3: "AR", quienRecibe: "AS",
+  montoARS: "AT", fueSeguimiento: "AU", deDondeVieneLead: "AV",
+  tagManychat: "AW", notasInternas: "AX",
 };
 
 export async function updateCallFields(
@@ -196,5 +224,51 @@ export async function updateCallFields(
   await sheets.spreadsheets.values.batchUpdate({
     spreadsheetId: SPREADSHEET_ID,
     requestBody: { valueInputOption: "RAW", data: updates },
+  });
+}
+
+export async function fetchSeguimientos(): Promise<Seguimiento[]> {
+  const sheets = getSheets();
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId: SPREADSHEET_ID,
+    range: "'🔄 Seguimientos'!A2:H",
+  });
+  const rows = (res.data.values || []) as string[][];
+
+  return rows.map((r, i) => ({
+    rowIndex: i + 2,
+    fecha: str(r, 0),
+    lead: str(r, 1),
+    closer: str(r, 2),
+    tipo: str(r, 3),
+    nota: str(r, 4),
+    resultado: str(r, 5),
+    fechaProximoContacto: str(r, 6),
+    leadRowIndex: num(r, 7),
+  }));
+}
+
+export async function appendSeguimiento(data: {
+  fecha: string;
+  lead: string;
+  closer: string;
+  tipo: string;
+  nota: string;
+  resultado: string;
+  fechaProximoContacto: string;
+  leadRowIndex: number;
+}): Promise<void> {
+  const sheets = getSheets(false);
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SPREADSHEET_ID,
+    range: "'🔄 Seguimientos'!A:H",
+    valueInputOption: "RAW",
+    requestBody: {
+      values: [[
+        data.fecha, data.lead, data.closer, data.tipo,
+        data.nota, data.resultado, data.fechaProximoContacto,
+        data.leadRowIndex,
+      ]],
+    },
   });
 }
