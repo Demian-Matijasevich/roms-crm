@@ -1,9 +1,13 @@
 // webapp/app/api/pagos/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { appendPayment } from "@/lib/sheets";
+import { requireSession } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await requireSession();
+    if ("error" in auth) return auth.error;
+
     const body = await req.json();
 
     const {

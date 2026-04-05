@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateCallFields } from "@/lib/sheets";
+import { requireSession } from "@/lib/auth";
 
 const EDITABLE_FIELDS = [
   "nombre", "instagram", "closer", "setter", "programa",
@@ -10,6 +11,9 @@ const EDITABLE_FIELDS = [
 
 export async function PUT(req: NextRequest) {
   try {
+    const auth = await requireSession();
+    if ("error" in auth) return auth.error;
+
     const body = await req.json();
     const { rowIndex, fields } = body;
 

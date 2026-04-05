@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 import path from "path";
 import { SPREADSHEET_ID } from "@/lib/constants";
+import { requireSession } from "@/lib/auth";
 
 function getAuth() {
   const scopes = ["https://www.googleapis.com/auth/spreadsheets"];
@@ -24,6 +25,9 @@ function getSheets() {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await requireSession();
+    if ("error" in auth) return auth.error;
+
     const body = await req.json();
 
     const {

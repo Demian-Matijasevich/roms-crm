@@ -1,5 +1,6 @@
 // webapp/lib/auth.ts
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 import { SignJWT, jwtVerify } from "jose";
 import { TEAM } from "./constants";
 import type { AuthSession, Role } from "./types";
@@ -52,4 +53,21 @@ export function hasRole(session: AuthSession | null, role: Role): boolean {
 
 export function isAdmin(session: AuthSession | null): boolean {
   return hasRole(session, "admin");
+}
+
+export async function requireSession(): Promise<{ session: AuthSession } | { error: NextResponse }> {
+  const session = await getSession();
+  if (!session) {
+    return { error: NextResponse.json({ error: "No autorizado" }, { status: 401 }) };
+  }
+  return { session };
+}
+
+export async function requireAdmin(): Promise<{ session: AuthSession } | { error: NextResponse }> {
+  const result = await requireSession();
+  if ("error" in result) return result;
+  if (!isAdmin(result.session)) {
+    return { error: NextResponse.json({ error: "Acceso denegado" }, { status: 403 }) };
+  }
+  return result;
 }

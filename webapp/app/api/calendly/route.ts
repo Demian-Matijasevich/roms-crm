@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireSession } from "@/lib/auth";
 
 interface CalendlyAccount {
   name: string;
@@ -54,6 +55,9 @@ async function fetchEventTypes(account: CalendlyAccount) {
 }
 
 export async function GET() {
+  const auth = await requireSession();
+  if ("error" in auth) return auth.error;
+
   const accounts = getAccounts();
   const results = await Promise.all(accounts.map(fetchEventTypes));
   const eventTypes = results.flat();
