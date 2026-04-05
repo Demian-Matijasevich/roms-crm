@@ -58,3 +58,14 @@ export const reporteSetterSchema = z.object({
   calendariosEnviados: z.number().int().min(0),
   notas: safeString(2000).default(""),
 });
+
+export const seguimientoSchema = z.object({
+  fecha: z.string().min(1),
+  lead: safeString(100),
+  closer: safeString(50),
+  tipo: z.enum(["Call inicial", "Seguimiento #1", "Seguimiento #2", "Seguimiento #3", "Re-agenda", "Cierre", "Descarte"]),
+  nota: safeString(2000),
+  resultado: safeString(500).default(""),
+  fechaProximoContacto: z.string().default(""),
+  leadRowIndex: z.number().int().min(2),
+});
