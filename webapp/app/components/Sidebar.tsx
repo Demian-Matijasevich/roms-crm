@@ -50,6 +50,7 @@ function getNav(roles: Role[]): NavSection[] {
       ]},
       { title: "CARGAR", items: [
         { href: "/form/llamada", label: "Cargar Llamada", icon: "📝" },
+        { href: "/form/venta-directa", label: "Venta por Chat", icon: "💬" },
         { href: "/form/pago", label: "Cargar Pago", icon: "💰" },
         { href: "/form/reporte-setter", label: "Reporte Diario", icon: "📝" },
       ]},
@@ -66,6 +67,7 @@ function getNav(roles: Role[]): NavSection[] {
       ]},
       { title: "CARGAR", items: [
         { href: "/form/llamada", label: "Cargar Llamada", icon: "📝" },
+        { href: "/form/venta-directa", label: "Venta por Chat", icon: "💬" },
         { href: "/form/pago", label: "Cargar Pago", icon: "💰" },
       ]},
     );
