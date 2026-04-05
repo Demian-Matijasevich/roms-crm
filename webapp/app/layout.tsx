@@ -6,6 +6,7 @@ import Sidebar from "./components/Sidebar";
 import PWARegister from "./components/PWARegister";
 import SaleBanner from "./components/SaleBanner";
 import { getSession } from "@/lib/auth";
+import CommandPaletteWrapper from "./components/CommandPaletteWrapper";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
@@ -35,6 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {session ? (
           <>
             <SaleBanner />
+            <CommandPaletteWrapper />
             <Sidebar user={session} />
             <main className="flex-1 ml-0 lg:ml-56 pt-18 lg:pt-0 p-4 lg:p-8">{children}</main>
           </>
