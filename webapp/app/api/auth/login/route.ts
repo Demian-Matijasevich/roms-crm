@@ -2,8 +2,17 @@
 import { NextResponse } from "next/server";
 import { findUser, createSessionToken } from "@/lib/auth";
 import { loginSchema } from "@/lib/schemas";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
+  const ip = request.headers.get("x-forwarded-for") || "unknown";
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json(
+      { error: "Demasiados intentos. Esperá 1 minuto." },
+      { status: 429 }
+    );
+  }
+
   const parsed = loginSchema.safeParse(await request.json());
   if (!parsed.success) {
     return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
