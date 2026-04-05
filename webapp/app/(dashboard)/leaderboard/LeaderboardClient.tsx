@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import type { CloserStats, SetterStats } from "@/lib/types";
-import { formatUSD, formatPct } from "@/lib/data";
-import MonthSelector from "@/app/components/MonthSelector";
-import { getCloserStats, getSetterStats } from "@/lib/data";
+import { useMemo, useState } from "react";
 import type { Llamada } from "@/lib/types";
-
-type Tab = "closers" | "setters";
+import { getCloserStats, getSetterStats, formatUSD, formatPct, isCerrado, filterByMonth } from "@/lib/data";
+import { getCloserRankings, getCloserStreaks, getCloserBadges } from "@/lib/gamification";
+import { MONTH_LABELS } from "@/lib/constants";
+import MonthSelector from "@/app/components/MonthSelector";
 
 interface Props {
   llamadas: Llamada[];
@@ -16,286 +14,222 @@ interface Props {
 }
 
 function medal(pos: number): string {
-  if (pos === 1) return "🥇";
-  if (pos === 2) return "🥈";
-  if (pos === 3) return "🥉";
-  return String(pos);
+  if (pos === 1) return "\u{1F947}";
+  if (pos === 2) return "\u{1F948}";
+  if (pos === 3) return "\u{1F949}";
+  return `#${pos}`;
+}
+
+function borderStyle(pos: number): string {
+  if (pos === 1) return "border-yellow-500/60 bg-yellow-500/5";
+  if (pos === 2) return "border-gray-400/50 bg-gray-400/5";
+  if (pos === 3) return "border-amber-700/50 bg-amber-700/5";
+  return "border-card-border";
 }
 
 export default function LeaderboardClient({ llamadas, defaultMonth, availableMonths }: Props) {
-  const [tab, setTab] = useState<Tab>("closers");
   const [mes, setMes] = useState(defaultMonth);
-  const [selectedPerson, setSelectedPerson] = useState<string | null>(null);
 
   const closers = useMemo(() => getCloserStats(llamadas, mes), [llamadas, mes]);
   const setters = useMemo(
     () => getSetterStats(llamadas, mes).sort((a, b) => b.cashDeLeads - a.cashDeLeads),
-    [llamadas, mes]
+    [llamadas, mes],
   );
 
-  const closerTotals = useMemo(() => ({
-    cashCollected: closers.reduce((s, c) => s + c.cashCollected, 0),
-    cerradas: closers.reduce((s, c) => s + c.cerradas, 0),
-    llamadas: closers.reduce((s, c) => s + c.llamadas, 0),
-    presentadas: closers.reduce((s, c) => s + c.presentadas, 0),
-    comision: closers.reduce((s, c) => s + c.comision, 0),
-  }), [closers]);
+  const streaks = useMemo(() => getCloserStreaks(llamadas), [llamadas]);
+  const rankings = useMemo(() => getCloserRankings(llamadas, mes), [llamadas, mes]);
 
-  const setterTotals = useMemo(() => ({
-    agendas: setters.reduce((s, r) => s + r.agendas, 0),
-    presentadas: setters.reduce((s, r) => s + r.presentadas, 0),
-    cerradas: setters.reduce((s, r) => s + r.cerradas, 0),
-    calificadas: setters.reduce((s, r) => s + r.calificadas, 0),
-    cashDeLeads: setters.reduce((s, r) => s + r.cashDeLeads, 0),
-    comision: setters.reduce((s, r) => s + r.comision, 0),
-  }), [setters]);
+  // Compute badges for each closer
+  const badgesMap = useMemo(() => {
+    const map = new Map<string, ReturnType<typeof getCloserBadges>>();
+    for (const c of closers) {
+      map.set(c.nombre, getCloserBadges(llamadas, c.nombre, mes));
+    }
+    return map;
+  }, [llamadas, closers, mes]);
 
-  const tabClass = (t: Tab) =>
-    tab === t
-      ? "px-4 py-2 rounded-lg text-sm font-medium border bg-purple/15 text-purple-light border-purple/30 transition-colors"
-      : "px-4 py-2 rounded-lg text-sm font-medium border text-muted border-card-border hover:text-foreground transition-colors";
+  // #1 per metric
+  const metricLeaders = useMemo(() => {
+    const filtered = closers.filter(c => c.nombre !== "Sin asignar");
+    if (filtered.length === 0) return null;
 
-  const thClass = "px-4 py-3 text-xs text-muted uppercase tracking-wider font-medium whitespace-nowrap text-left";
-  const tdClass = "px-4 py-3 whitespace-nowrap";
+    const topCash = filtered.reduce((a, b) => (b.cashCollected > a.cashCollected ? b : a));
+    const topCierre = filtered.reduce((a, b) => (b.cierrePresentadas > a.cierrePresentadas ? b : a));
+    const topTicket = filtered.reduce((a, b) => (b.ticketPromedio > a.ticketPromedio ? b : a));
+
+    // Velocidad: average days between fechaAgenda and fechaLlamada for cerrados
+    const monthLlamadas = filterByMonth(llamadas, mes);
+    const closerVelocities = new Map<string, number>();
+    for (const c of filtered) {
+      const cerrados = monthLlamadas.filter(l => l.closer === c.nombre && isCerrado(l) && l.fechaAgenda && l.fechaLlamada);
+      if (cerrados.length === 0) {
+        closerVelocities.set(c.nombre, Infinity);
+        continue;
+      }
+      const totalDays = cerrados.reduce((sum, l) => {
+        const diff = Math.abs(new Date(l.fechaLlamada).getTime() - new Date(l.fechaAgenda).getTime()) / 86400000;
+        return sum + diff;
+      }, 0);
+      closerVelocities.set(c.nombre, totalDays / cerrados.length);
+    }
+    const topVelocidad = filtered.reduce((a, b) =>
+      (closerVelocities.get(a.nombre)! <= closerVelocities.get(b.nombre)! ? a : b)
+    );
+    const velocidadValue = closerVelocities.get(topVelocidad.nombre)!;
+
+    // Racha
+    const topRacha = filtered.reduce((best, c) => {
+      const s = streaks.get(c.nombre)?.currentStreak || 0;
+      const bestS = streaks.get(best.nombre)?.currentStreak || 0;
+      return s > bestS ? c : best;
+    });
+
+    return [
+      { label: "CASH", emoji: "\u{1F4B0}", name: topCash.nombre, value: formatUSD(topCash.cashCollected) },
+      { label: "CIERRE %", emoji: "\u{1F3AF}", name: topCierre.nombre, value: formatPct(topCierre.cierrePresentadas) },
+      { label: "TICKET", emoji: "\u{1F48E}", name: topTicket.nombre, value: formatUSD(topTicket.ticketPromedio) },
+      { label: "VELOCIDAD", emoji: "\u26A1", name: topVelocidad.nombre, value: velocidadValue === Infinity ? "-" : `${velocidadValue.toFixed(1)}d` },
+      { label: "RACHA", emoji: "\u{1F525}", name: topRacha.nombre, value: `${streaks.get(topRacha.nombre)?.currentStreak || 0} dias` },
+    ];
+  }, [closers, llamadas, mes, streaks]);
 
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Leaderboard</h2>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h2 className="text-2xl font-bold">Leaderboard</h2>
+          <p className="text-sm text-muted mt-1">{MONTH_LABELS[mes] || mes}</p>
+        </div>
         <MonthSelector value={mes} onChange={setMes} availableMonths={availableMonths} />
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6">
-        <button className={tabClass("closers")} onClick={() => setTab("closers")}>
-          Closers
-        </button>
-        <button className={tabClass("setters")} onClick={() => setTab("setters")}>
-          Setters
-        </button>
-      </div>
+      {/* ─── CLOSER CARDS ─── */}
+      {closers.length > 0 && (
+        <div className="mb-10">
+          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Ranking Closers</h3>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {closers
+              .filter(c => c.nombre !== "Sin asignar")
+              .map((c, i) => {
+                const pos = i + 1;
+                const streak = streaks.get(c.nombre)?.currentStreak || 0;
+                const badges = badgesMap.get(c.nombre) || [];
+                const earnedBadges = badges.filter(b => b.earned);
 
-      {/* Individual Stat Cards */}
-      {tab === "closers" && closers.length > 0 && (
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <h3 className="text-sm font-medium text-muted">Métricas Individuales</h3>
-            {selectedPerson && (
-              <button onClick={() => setSelectedPerson(null)}
-                className="text-xs text-purple hover:text-purple-light transition-colors">
-                ← Ver todos
-              </button>
-            )}
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-            {(selectedPerson ? closers.filter(c => c.nombre === selectedPerson) : closers).map((c, i) => {
-              const pos = closers.indexOf(c) + 1;
-              return (
-                <div key={c.nombre}
-                  onClick={() => setSelectedPerson(selectedPerson === c.nombre ? null : c.nombre)}
-                  className={`bg-card-bg border rounded-xl p-4 cursor-pointer transition-all ${
-                    selectedPerson === c.nombre
-                      ? "border-purple/50 bg-purple/5"
-                      : "border-card-border hover:border-purple/30"
-                  }`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm">{medal(pos)}</span>
-                    <span className="text-xs text-muted">{formatPct(c.cierrePresentadas)} cierre</span>
-                  </div>
-                  <p className="font-semibold text-sm mb-1">{c.nombre}</p>
-                  <p className="text-xl font-bold text-green">{formatUSD(c.cashCollected)}</p>
-                  <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
-                    <div><span className="text-muted">Llamadas:</span> {c.llamadas}</div>
-                    <div><span className="text-muted">Cerradas:</span> {c.cerradas}</div>
-                    <div><span className="text-muted">Show up:</span> {formatPct(c.showUp)}</div>
-                    <div><span className="text-muted">Ticket:</span> {formatUSD(c.ticketPromedio)}</div>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-card-border">
-                    <span className="text-xs text-muted">Comisión: </span>
-                    <span className="text-xs font-medium text-purple-light">{formatUSD(c.comision)}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {tab === "setters" && setters.length > 0 && (
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <h3 className="text-sm font-medium text-muted">Métricas Individuales</h3>
-            {selectedPerson && (
-              <button onClick={() => setSelectedPerson(null)}
-                className="text-xs text-purple hover:text-purple-light transition-colors">
-                ← Ver todos
-              </button>
-            )}
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-            {(selectedPerson ? setters.filter(s => s.nombre === selectedPerson) : setters).map((s, i) => {
-              const pos = setters.indexOf(s) + 1;
-              return (
-                <div key={s.nombre}
-                  onClick={() => setSelectedPerson(selectedPerson === s.nombre ? null : s.nombre)}
-                  className={`bg-card-bg border rounded-xl p-4 cursor-pointer transition-all ${
-                    selectedPerson === s.nombre
-                      ? "border-purple/50 bg-purple/5"
-                      : "border-card-border hover:border-purple/30"
-                  }`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm">{medal(pos)}</span>
-                    <span className="text-xs text-muted">{formatPct(s.tasaAgenda)} tasa</span>
-                  </div>
-                  <p className="font-semibold text-sm mb-1">{s.nombre}</p>
-                  <p className="text-xl font-bold text-green">{formatUSD(s.cashDeLeads)}</p>
-                  <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
-                    <div><span className="text-muted">Agendas:</span> {s.agendas}</div>
-                    <div><span className="text-muted">Cerradas:</span> {s.cerradas}</div>
-                    <div><span className="text-muted">Calif:</span> {s.calificadas}</div>
-                    <div><span className="text-muted">Presentadas:</span> {s.presentadas}</div>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-card-border">
-                    <span className="text-xs text-muted">Comisión: </span>
-                    <span className="text-xs font-medium text-purple-light">{formatUSD(s.comision)}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Closer Table */}
-      {tab === "closers" && (
-        <div className="bg-card-bg border border-card-border rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-[#111113] border-b border-card-border">
-                  <th className={thClass}>Pos</th>
-                  <th className={thClass}>Closer</th>
-                  <th className={`${thClass} text-right`}>Cash Collected</th>
-                  <th className={`${thClass} text-right`}>Cerradas</th>
-                  <th className={`${thClass} text-right`}>Llamadas</th>
-                  <th className={`${thClass} text-right`}>Presentadas</th>
-                  <th className={`${thClass} text-right`}>Show Up%</th>
-                  <th className={`${thClass} text-right`}>Cierre%</th>
-                  <th className={`${thClass} text-right`}>Ticket Prom.</th>
-                  <th className={`${thClass} text-right`}>Comisión</th>
-                </tr>
-              </thead>
-              <tbody>
-                {closers.length === 0 && (
-                  <tr>
-                    <td colSpan={10} className="px-4 py-8 text-center text-muted text-sm">
-                      Sin datos para este mes.
-                    </td>
-                  </tr>
-                )}
-                {closers.map((c, i) => (
-                  <tr
+                return (
+                  <div
                     key={c.nombre}
-                    className={`border-b border-card-border transition-colors ${
-                      i === 0 ? "bg-purple/5" : "hover:bg-[#1a1a1e]"
-                    }`}
+                    className={`bg-card-bg border-2 rounded-xl p-5 transition-all hover:scale-[1.02] ${borderStyle(pos)}`}
                   >
-                    <td className={`${tdClass} text-center text-base`}>{medal(i + 1)}</td>
-                    <td className={`${tdClass} font-medium`}>{c.nombre}</td>
-                    <td className={`${tdClass} text-right font-semibold text-green`}>{formatUSD(c.cashCollected)}</td>
-                    <td className={`${tdClass} text-right`}>{c.cerradas}</td>
-                    <td className={`${tdClass} text-right text-muted`}>{c.llamadas}</td>
-                    <td className={`${tdClass} text-right text-muted`}>{c.presentadas}</td>
-                    <td className={`${tdClass} text-right text-muted`}>{formatPct(c.showUp)}</td>
-                    <td className={`${tdClass} text-right text-muted`}>{formatPct(c.cierrePresentadas)}</td>
-                    <td className={`${tdClass} text-right text-muted`}>{formatUSD(c.ticketPromedio)}</td>
-                    <td className={`${tdClass} text-right text-purple-light`}>{formatUSD(c.comision)}</td>
-                  </tr>
-                ))}
-                {closers.length > 0 && (
-                  <tr className="bg-[#111113] font-bold border-t border-card-border">
-                    <td className={tdClass}></td>
-                    <td className={tdClass}>Total</td>
-                    <td className={`${tdClass} text-right text-green`}>{formatUSD(closerTotals.cashCollected)}</td>
-                    <td className={`${tdClass} text-right`}>{closerTotals.cerradas}</td>
-                    <td className={`${tdClass} text-right text-muted`}>{closerTotals.llamadas}</td>
-                    <td className={`${tdClass} text-right text-muted`}>{closerTotals.presentadas}</td>
-                    <td className={tdClass}></td>
-                    <td className={tdClass}></td>
-                    <td className={tdClass}></td>
-                    <td className={`${tdClass} text-right text-purple-light`}>{formatUSD(closerTotals.comision)}</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                    {/* Top row: medal + streak */}
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-2xl">{medal(pos)}</span>
+                      {streak > 0 && (
+                        <span className="text-sm text-orange-400 font-medium">
+                          {"\u{1F525}"} {streak} dias
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Name */}
+                    <p className="font-bold text-base mb-1">{c.nombre}</p>
+
+                    {/* Cash */}
+                    <p className="text-2xl font-bold text-green mb-2">{formatUSD(c.cashCollected)}</p>
+
+                    {/* Stats line */}
+                    <p className="text-sm text-muted">
+                      {c.cerradas} ventas &middot;{" "}
+                      <span className="text-purple-light">{formatPct(c.cierrePresentadas)}</span> cierre
+                    </p>
+
+                    {/* Badges */}
+                    {earnedBadges.length > 0 && (
+                      <div className="mt-3 pt-3 border-t border-card-border flex flex-wrap gap-1">
+                        {earnedBadges.map(b => (
+                          <span key={b.id} title={b.label} className="text-base cursor-default">
+                            {b.icon}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
           </div>
         </div>
       )}
 
-      {/* Setter Table */}
-      {tab === "setters" && (
-        <div className="bg-card-bg border border-card-border rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-[#111113] border-b border-card-border">
-                  <th className={thClass}>Pos</th>
-                  <th className={thClass}>Setter</th>
-                  <th className={`${thClass} text-right`}>Agendas</th>
-                  <th className={`${thClass} text-right`}>Presentadas</th>
-                  <th className={`${thClass} text-right`}>Cerradas</th>
-                  <th className={`${thClass} text-right`}>Calificadas</th>
-                  <th className={`${thClass} text-right`}>Tasa Agenda%</th>
-                  <th className={`${thClass} text-right`}>Cash de Leads</th>
-                  <th className={`${thClass} text-right`}>Comisión</th>
-                </tr>
-              </thead>
-              <tbody>
-                {setters.length === 0 && (
-                  <tr>
-                    <td colSpan={9} className="px-4 py-8 text-center text-muted text-sm">
-                      Sin datos para este mes.
-                    </td>
-                  </tr>
-                )}
-                {setters.map((s, i) => (
-                  <tr
+      {/* ─── #1 EN CADA METRICA ─── */}
+      {metricLeaders && (
+        <div className="mb-10">
+          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">
+            {"\u{1F947}"} #1 en cada metrica
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {metricLeaders.map(m => (
+              <div
+                key={m.label}
+                className="bg-card-bg border border-card-border rounded-xl p-4 text-center hover:border-purple/30 transition-colors"
+              >
+                <span className="text-xl">{m.emoji}</span>
+                <p className="text-xs text-muted uppercase tracking-wider mt-2 mb-1">{m.label}</p>
+                <p className="font-bold text-sm">{m.name}</p>
+                <p className="text-xs text-green mt-1">{m.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─── SETTER RANKING ─── */}
+      {setters.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Ranking Setters</h3>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {setters
+              .filter(s => s.nombre !== "Sin asignar")
+              .map((s, i) => {
+                const pos = i + 1;
+                return (
+                  <div
                     key={s.nombre}
-                    className={`border-b border-card-border transition-colors ${
-                      i === 0 ? "bg-purple/5" : "hover:bg-[#1a1a1e]"
+                    className={`bg-card-bg border rounded-xl p-5 transition-all hover:scale-[1.02] ${
+                      pos <= 3 ? borderStyle(pos) : "border-card-border"
                     }`}
                   >
-                    <td className={`${tdClass} text-center text-base`}>{medal(i + 1)}</td>
-                    <td className={`${tdClass} font-medium`}>{s.nombre}</td>
-                    <td className={`${tdClass} text-right`}>{s.agendas}</td>
-                    <td className={`${tdClass} text-right text-muted`}>{s.presentadas}</td>
-                    <td className={`${tdClass} text-right`}>{s.cerradas}</td>
-                    <td className={`${tdClass} text-right text-muted`}>{s.calificadas}</td>
-                    <td className={`${tdClass} text-right text-muted`}>{formatPct(s.tasaAgenda)}</td>
-                    <td className={`${tdClass} text-right font-semibold text-green`}>{formatUSD(s.cashDeLeads)}</td>
-                    <td className={`${tdClass} text-right text-purple-light`}>{formatUSD(s.comision)}</td>
-                  </tr>
-                ))}
-                {setters.length > 0 && (
-                  <tr className="bg-[#111113] font-bold border-t border-card-border">
-                    <td className={tdClass}></td>
-                    <td className={tdClass}>Total</td>
-                    <td className={`${tdClass} text-right`}>{setterTotals.agendas}</td>
-                    <td className={`${tdClass} text-right text-muted`}>{setterTotals.presentadas}</td>
-                    <td className={`${tdClass} text-right`}>{setterTotals.cerradas}</td>
-                    <td className={`${tdClass} text-right text-muted`}>{setterTotals.calificadas}</td>
-                    <td className={tdClass}></td>
-                    <td className={`${tdClass} text-right text-green`}>{formatUSD(setterTotals.cashDeLeads)}</td>
-                    <td className={`${tdClass} text-right text-purple-light`}>{formatUSD(setterTotals.comision)}</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-2xl">{medal(pos)}</span>
+                    </div>
+
+                    <p className="font-bold text-base mb-1">{s.nombre}</p>
+                    <p className="text-xl font-bold text-green mb-2">{formatUSD(s.cashDeLeads)}</p>
+
+                    <div className="text-sm text-muted space-y-1">
+                      <p>{s.agendas} agendas &middot; {s.cerradas} cerradas</p>
+                      <p>
+                        <span className="text-purple-light">{formatPct(s.tasaAgenda)}</span> tasa
+                      </p>
+                    </div>
+
+                    <div className="mt-3 pt-3 border-t border-card-border">
+                      <span className="text-xs text-muted">Comision: </span>
+                      <span className="text-xs font-medium text-yellow-400">{formatUSD(s.comision)}</span>
+                    </div>
+                  </div>
+                );
+              })}
           </div>
+        </div>
+      )}
+
+      {/* Empty state */}
+      {closers.length === 0 && setters.length === 0 && (
+        <div className="bg-card-bg border border-card-border rounded-xl p-12 text-center">
+          <p className="text-muted">Sin datos para este mes.</p>
         </div>
       )}
     </div>
   );
 }
-
