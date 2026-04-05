@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { filterByMonth, getCloserStats, getSetterStats, formatUSD, isCerrado } from "@/lib/data";
 import { GastosChart } from "@/app/components/Charts";
 import MonthSelector from "@/app/components/MonthSelector";
+import ExportButton from "@/app/components/ExportButton";
 import type { Llamada, Gasto, MonthlyData } from "@/lib/types";
 
 interface FinanzasClientProps {
@@ -80,7 +81,10 @@ export default function FinanzasClient({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">Finanzas</h2>
-        <MonthSelector value={mes} onChange={setMes} availableMonths={availableMonths} />
+        <div className="flex items-center gap-3">
+          <ExportButton reportId="finanzas-report" />
+          <MonthSelector value={mes} onChange={setMes} availableMonths={availableMonths} />
+        </div>
       </div>
 
       {/* P&L Card */}
@@ -268,6 +272,37 @@ export default function FinanzasClient({
 
       {/* Monthly Chart */}
       <GastosChart data={monthlyData} />
+
+      {/* Hidden printable report for PDF export */}
+      <div id="finanzas-report" className="hidden">
+        <div className="kpi-grid">
+          <div className="kpi"><div className="kpi-label">Ingresos</div><div className="kpi-value green">{formatUSD(totalIngresos)}</div></div>
+          <div className="kpi"><div className="kpi-label">Egresos</div><div className="kpi-value red">{formatUSD(totalEgresos)}</div></div>
+          <div className="kpi"><div className="kpi-label">Resultado Neto</div><div className="kpi-value purple">{formatUSD(resultadoNeto)}</div></div>
+          <div className="kpi"><div className="kpi-label">Comisiones</div><div className="kpi-value">{formatUSD(totalComisionesClosers + totalComisionesSetters)}</div></div>
+        </div>
+        <h3>Comisiones por Empleado</h3>
+        <table>
+          <thead><tr><th>Nombre</th><th>Rol</th><th>Ventas/Agendas</th><th className="text-right">Cash</th><th className="text-right">Comisi&oacute;n</th></tr></thead>
+          <tbody>
+            {closerStats.map(c => (
+              <tr key={c.nombre}><td>{c.nombre}</td><td>Closer</td><td>{c.cerradas}</td><td className="text-right">{formatUSD(c.cashCollected)}</td><td className="text-right font-bold">{formatUSD(c.comision)}</td></tr>
+            ))}
+            {setterStats.map(s => (
+              <tr key={s.nombre}><td>{s.nombre}</td><td>Setter</td><td>{s.agendas}</td><td className="text-right">{formatUSD(s.cashDeLeads)}</td><td className="text-right font-bold">{formatUSD(s.comision)}</td></tr>
+            ))}
+          </tbody>
+        </table>
+        {byCat.length > 0 && (
+          <>
+            <h3>Gastos por Categor&iacute;a</h3>
+            <table>
+              <thead><tr><th>Categor&iacute;a</th><th className="text-right">Monto</th></tr></thead>
+              <tbody>{byCat.map(([cat, monto]) => <tr key={cat}><td>{cat}</td><td className="text-right">{formatUSD(monto)}</td></tr>)}</tbody>
+            </table>
+          </>
+        )}
+      </div>
     </div>
   );
 }

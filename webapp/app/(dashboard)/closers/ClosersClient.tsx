@@ -11,6 +11,7 @@ import {
 } from "@/lib/data";
 import { TEAM, MONTH_LABELS, PROGRAMS } from "@/lib/constants";
 import MonthSelector from "@/app/components/MonthSelector";
+import ExportButton from "@/app/components/ExportButton";
 
 interface Props {
   llamadas: Llamada[];
@@ -220,6 +221,7 @@ export default function ClosersClient({ llamadas }: Props) {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <ExportButton reportId="closers-report" />
           <select
             value={selectedCloser}
             onChange={(e) => setSelectedCloser(e.target.value)}
@@ -404,6 +406,48 @@ export default function ClosersClient({ llamadas }: Props) {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Hidden printable report for PDF export */}
+      <div id="closers-report" className="hidden">
+        <h2>Closers Analytics</h2>
+        <div className="kpi-grid">
+          <div className="kpi"><div className="kpi-label">Agendas</div><div className="kpi-value">{totalAgendas}</div></div>
+          <div className="kpi"><div className="kpi-label">Show-up</div><div className="kpi-value">{showUps.length} ({formatPct(totalAgendas > 0 ? showUps.length / totalAgendas : 0)})</div></div>
+          <div className="kpi"><div className="kpi-label">Calificados</div><div className="kpi-value">{calificados.length} ({formatPct(totalAgendas > 0 ? calificados.length / totalAgendas : 0)})</div></div>
+          <div className="kpi"><div className="kpi-label">Cerrados</div><div className="kpi-value green">{cerrados.length} ({formatPct(totalAgendas > 0 ? cerrados.length / totalAgendas : 0)})</div></div>
+        </div>
+        <h3>KPIs Avanzados</h3>
+        <table>
+          <thead><tr><th>M&eacute;trica</th><th className="text-right">Valor</th></tr></thead>
+          <tbody>
+            {kpis.map(kpi => (
+              <tr key={kpi.label}><td>{kpi.label}</td><td className="text-right font-bold">{kpi.value}</td></tr>
+            ))}
+          </tbody>
+        </table>
+        {programDist.length > 0 && (
+          <>
+            <h3>Distribuci&oacute;n por Programa</h3>
+            <table>
+              <thead><tr><th>Programa</th><th className="text-right">Cierres</th><th className="text-right">%</th></tr></thead>
+              <tbody>
+                {programDist.map(p => (
+                  <tr key={p.name}><td>{p.name}</td><td className="text-right">{p.count}</td><td className="text-right">{formatPct(p.pct)}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+        <h3>Cash Semanal</h3>
+        <table>
+          <thead><tr><th>Semana</th><th className="text-right">Cash</th></tr></thead>
+          <tbody>
+            {weeklyData.map(w => (
+              <tr key={w.label}><td>{w.label}</td><td className="text-right font-bold">{w.cash > 0 ? formatUSD(w.cash) : "—"}</td></tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
