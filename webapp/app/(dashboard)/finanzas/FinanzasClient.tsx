@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { filterByMonth, getCloserStats, getSetterStats, formatUSD } from "@/lib/data";
+import { filterByMonth, getCloserStats, getSetterStats, formatUSD, isCerrado } from "@/lib/data";
 import { GastosChart } from "@/app/components/Charts";
 import MonthSelector from "@/app/components/MonthSelector";
 import type { Llamada, Gasto, MonthlyData } from "@/lib/types";
@@ -167,6 +167,37 @@ export default function FinanzasClient({
           <span className="text-purple-light">{formatUSD(totalComisionesClosers + totalComisionesSetters)}</span>
         </div>
       </div>
+
+      {/* Tesorería — Dónde está la plata */}
+      {(() => {
+        const receptorMap = new Map<string, { count: number; total: number }>();
+        for (const l of llamadasMes) {
+          if (!isCerrado(l) || l.cashDia1 <= 0) continue;
+          const receptor = l.quienRecibe || "Sin asignar";
+          if (!receptorMap.has(receptor)) receptorMap.set(receptor, { count: 0, total: 0 });
+          const r = receptorMap.get(receptor)!;
+          r.count++;
+          r.total += l.cashDia1;
+        }
+        const receptores = Array.from(receptorMap.entries()).sort((a, b) => b[1].total - a[1].total);
+
+        return receptores.length > 0 ? (
+          <div className="bg-card-bg border border-card-border rounded-xl p-6 mb-6">
+            <h3 className="text-base font-semibold mb-4">💼 Tesorería — Dónde está la plata</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {receptores.map(([nombre, data]) => (
+                <div key={nombre} className="bg-[#111113] border border-card-border rounded-lg p-4 flex justify-between items-center">
+                  <div>
+                    <p className="text-sm font-semibold">{nombre}</p>
+                    <p className="text-[10px] text-muted">{data.count} pago{data.count !== 1 ? "s" : ""} recibido{data.count !== 1 ? "s" : ""}</p>
+                  </div>
+                  <p className="text-lg font-extrabold text-green">{formatUSD(data.total)}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null;
+      })()}
 
       {/* Gastos por Categoría */}
       {byCat.length > 0 && (
