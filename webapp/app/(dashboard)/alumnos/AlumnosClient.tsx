@@ -46,9 +46,15 @@ export default function AlumnosClient({ alumnos }: { alumnos: Alumno[] }) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+  const [page, setPage] = useState(0);
+
+  const PAGE_SIZE = 50;
 
   const filtered =
     activeTab === "Todos" ? alumnos : alumnos.filter((a) => a.estado === activeTab);
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   function openEdit(a: Alumno) {
     setEditing(a);
@@ -132,7 +138,7 @@ export default function AlumnosClient({ alumnos }: { alumnos: Alumno[] }) {
         {TABS.map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => { setActiveTab(tab); setPage(0); }}
             className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               activeTab === tab
                 ? "bg-purple/15 text-purple-light"
@@ -170,7 +176,7 @@ export default function AlumnosClient({ alumnos }: { alumnos: Alumno[] }) {
                   </td>
                 </tr>
               ) : (
-                filtered.map((a, i) => (
+                paginated.map((a, i) => (
                   <tr key={i} className="border-b border-card-border hover:bg-[#1f1f23] transition-colors">
                     <td className="px-4 py-3 font-medium">{a.nombre || "-"}</td>
                     <td className="px-4 py-3 text-muted">{a.programa || "-"}</td>
@@ -205,6 +211,30 @@ export default function AlumnosClient({ alumnos }: { alumnos: Alumno[] }) {
             </tbody>
           </table>
         </div>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-card-border">
+            <span className="text-xs text-muted">{filtered.length} resultado{filtered.length !== 1 ? "s" : ""}</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(0, p - 1))}
+                disabled={page === 0}
+                className="text-xs text-muted hover:text-foreground disabled:opacity-30 px-2 py-1 rounded border border-card-border"
+              >
+                ← Anterior
+              </button>
+              <span className="text-xs text-muted">
+                {page + 1} de {totalPages}
+              </span>
+              <button
+                onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                disabled={page >= totalPages - 1}
+                className="text-xs text-muted hover:text-foreground disabled:opacity-30 px-2 py-1 rounded border border-card-border"
+              >
+                Siguiente →
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Edit Modal/Drawer */}

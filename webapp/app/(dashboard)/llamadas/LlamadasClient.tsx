@@ -27,6 +27,9 @@ export default function LlamadasClient({ llamadas, isAdmin, userName }: Props) {
   const [sortKey, setSortKey] = useState<SortKey>("fechaLlamada");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
+  const [page, setPage] = useState(0);
+
+  const PAGE_SIZE = 50;
 
   // Derive unique filter options from data
   const closers = useMemo(() => Array.from(new Set(llamadas.map(l => l.closer).filter(Boolean))).sort(), [llamadas]);
@@ -87,6 +90,12 @@ export default function LlamadasClient({ llamadas, isAdmin, userName }: Props) {
     });
   }, [llamadas, isAdmin, userName, search, estadoFilter, closerFilter, setterFilter, mesFilter, programaFilter, calificadoFilter, sortKey, sortDir]);
 
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+  // Reset page when filters change
+  const resetPage = () => setPage(0);
+
   function SortIcon({ col }: { col: SortKey }) {
     if (sortKey !== col) return <span className="ml-1 text-muted/40">↕</span>;
     return <span className="ml-1 text-purple-light">{sortDir === "asc" ? "↑" : "↓"}</span>;
@@ -104,7 +113,7 @@ export default function LlamadasClient({ llamadas, isAdmin, userName }: Props) {
             type="text"
             placeholder="Buscar por nombre, email o Instagram..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => { setSearch(e.target.value); resetPage(); }}
             className="w-full bg-card-bg border border-card-border rounded-lg pl-9 pr-4 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-purple"
           />
         </div>
@@ -112,32 +121,32 @@ export default function LlamadasClient({ llamadas, isAdmin, userName }: Props) {
 
       {/* Filter row */}
       <div className="flex flex-wrap gap-2 mb-4">
-        <select value={estadoFilter} onChange={e => setEstadoFilter(e.target.value)} className={selectClass}>
+        <select value={estadoFilter} onChange={e => { setEstadoFilter(e.target.value); resetPage(); }} className={selectClass}>
           <option value="all">Todos los estados</option>
           {ESTADOS_LLAMADA.map(e => <option key={e} value={e}>{e}</option>)}
         </select>
 
-        <select value={closerFilter} onChange={e => setCloserFilter(e.target.value)} className={selectClass}>
+        <select value={closerFilter} onChange={e => { setCloserFilter(e.target.value); resetPage(); }} className={selectClass}>
           <option value="all">Todos los closers</option>
           {closers.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
 
-        <select value={setterFilter} onChange={e => setSetterFilter(e.target.value)} className={selectClass}>
+        <select value={setterFilter} onChange={e => { setSetterFilter(e.target.value); resetPage(); }} className={selectClass}>
           <option value="all">Todos los setters</option>
           {setters.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
 
-        <select value={mesFilter} onChange={e => setMesFilter(e.target.value)} className={selectClass}>
+        <select value={mesFilter} onChange={e => { setMesFilter(e.target.value); resetPage(); }} className={selectClass}>
           <option value="all">Todos los meses</option>
           {meses.map(m => <option key={m} value={m}>{MONTH_LABELS[m] ?? m}</option>)}
         </select>
 
-        <select value={programaFilter} onChange={e => setProgramaFilter(e.target.value)} className={selectClass}>
+        <select value={programaFilter} onChange={e => { setProgramaFilter(e.target.value); resetPage(); }} className={selectClass}>
           <option value="all">Todos los programas</option>
           {programas.map(p => <option key={p} value={p}>{p}</option>)}
         </select>
 
-        <select value={calificadoFilter} onChange={e => setCalificadoFilter(e.target.value)} className={selectClass}>
+        <select value={calificadoFilter} onChange={e => { setCalificadoFilter(e.target.value); resetPage(); }} className={selectClass}>
           <option value="all">Calificado: todos</option>
           <option value="Sí">Calificado: Sí</option>
           <option value="No">Calificado: No</option>
@@ -186,7 +195,7 @@ export default function LlamadasClient({ llamadas, isAdmin, userName }: Props) {
                   </td>
                 </tr>
               )}
-              {filtered.map(l => (
+              {paginated.map(l => (
                 <>
                   <tr
                     key={l.rowIndex}
@@ -323,6 +332,30 @@ export default function LlamadasClient({ llamadas, isAdmin, userName }: Props) {
             )}
           </table>
         </div>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-card-border">
+            <span className="text-xs text-muted">{filtered.length} resultado{filtered.length !== 1 ? "s" : ""}</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(0, p - 1))}
+                disabled={page === 0}
+                className="text-xs text-muted hover:text-foreground disabled:opacity-30 px-2 py-1 rounded border border-card-border"
+              >
+                ← Anterior
+              </button>
+              <span className="text-xs text-muted">
+                {page + 1} de {totalPages}
+              </span>
+              <button
+                onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                disabled={page >= totalPages - 1}
+                className="text-xs text-muted hover:text-foreground disabled:opacity-30 px-2 py-1 rounded border border-card-border"
+              >
+                Siguiente →
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
