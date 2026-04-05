@@ -20,7 +20,8 @@ function getNav(roles: Role[]): NavSection[] {
   if (isAdmin) return [
     { title: "PRINCIPAL", items: [
       { href: "/", label: "Dashboard", icon: "📊" },
-      { href: "/llamadas", label: "CRM Llamadas", icon: "📞" },
+      { href: "/pipeline", label: "Pipeline", icon: "📞" },
+      { href: "/llamadas", label: "CRM Llamadas", icon: "📋" },
     ]},
     { title: "GESTIÓN", items: [
       { href: "/alumnos", label: "Alumnos", icon: "👥" },
@@ -42,7 +43,8 @@ function getNav(roles: Role[]): NavSection[] {
     sections.push(
       { title: "MI PANEL", items: [
         { href: "/", label: "Mi Dashboard", icon: "📊" },
-        { href: "/llamadas", label: "Mis Llamadas", icon: "📞" },
+        { href: "/pipeline", label: "Mi Pipeline", icon: "📞" },
+        { href: "/llamadas", label: "Mis Llamadas", icon: "📋" },
       ]},
       { title: "CARGAR", items: [
         { href: "/form/llamada", label: "Cargar Llamada", icon: "📝" },
@@ -57,7 +59,8 @@ function getNav(roles: Role[]): NavSection[] {
     sections.push(
       { title: "MI PANEL", items: [
         { href: "/", label: "Mi Dashboard", icon: "📊" },
-        { href: "/llamadas", label: "Mis Llamadas", icon: "📞" },
+        { href: "/pipeline", label: "Mi Pipeline", icon: "📞" },
+        { href: "/llamadas", label: "Mis Llamadas", icon: "📋" },
       ]},
       { title: "CARGAR", items: [
         { href: "/form/llamada", label: "Cargar Llamada", icon: "📝" },
