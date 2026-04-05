@@ -21,6 +21,7 @@ function getNav(roles: Role[]): NavSection[] {
     { title: "PRINCIPAL", items: [
       { href: "/", label: "Dashboard", icon: "📊" },
       { href: "/pipeline", label: "Pipeline", icon: "📞" },
+      { href: "/calendario", label: "Calendario", icon: "📅" },
       { href: "/llamadas", label: "CRM Llamadas", icon: "📋" },
     ]},
     { title: "GESTIÓN", items: [
@@ -29,6 +30,7 @@ function getNav(roles: Role[]): NavSection[] {
       { href: "/finanzas", label: "Finanzas", icon: "💰" },
     ]},
     { title: "EQUIPO", items: [
+      { href: "/closers", label: "Closers", icon: "📊" },
       { href: "/leaderboard", label: "Leaderboard", icon: "🏆" },
       { href: "/objetivos", label: "Objetivos", icon: "🎯" },
     ]},
