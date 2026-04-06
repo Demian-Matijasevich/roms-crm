@@ -52,17 +52,17 @@ export async function POST(req: NextRequest) {
     const sheets = google.sheets({ version: "v4", auth: getAuth() });
 
     // Build a full row (A-AX = 50 columns) for the Registro Calls sheet
-    // This creates a new lead entry already marked as Cerrado
+    const isSale = d.cashDia1 > 0;
     const row = [
       safeStr(d.nombre),        // A: Nombre
       safeStr(d.instagram),     // B: Instagram
-      d.fecha,                  // C: FechaLlamada (= fecha cierre)
-      d.fecha,                  // D: FechaAgenda (= fecha cierre)
+      d.fecha,                  // C: FechaLlamada
+      d.fecha,                  // D: FechaAgenda
       safeStr(d.setter),        // E: Setter
       safeStr(d.closer),        // F: Closer
-      "🚀 Cerrado",             // G: Estado
-      "Sí",                     // H: Se presentó (n/a but yes for stats)
-      "Sí",                     // I: Calificado
+      isSale ? "🚀 Cerrado" : "⏳ Pendiente", // G: Estado
+      isSale ? "Sí" : "",       // H: Se presentó
+      "",                       // I: Calificado
       safeStr(d.programa),      // J: Programa
       safeStr(d.contexto),      // K: ContextoSetter (usamos para notas)
       "Venta por chat",         // L: ContextoCloser

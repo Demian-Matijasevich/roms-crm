@@ -29,6 +29,12 @@ export default function CargarLlamadaForm({ llamadas }: Props) {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showNewLead, setShowNewLead] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newIG, setNewIG] = useState("");
+  const [newTel, setNewTel] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [creatingLead, setCreatingLead] = useState(false);
 
   // Step 3 fields
   const [sePresentó, setSePresentó] = useState<"Sí" | "No" | "">("");
@@ -60,6 +66,42 @@ export default function CargarLlamadaForm({ llamadas }: Props) {
         l.instagram?.toLowerCase().includes(q)
     );
   }, [pendientes, search]);
+
+  async function createNewLead() {
+    if (!newName.trim()) { setError("Nombre requerido"); return; }
+    setCreatingLead(true);
+    setError("");
+    try {
+      const res = await fetch("/api/venta-directa", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: newName.trim(),
+          instagram: newIG.trim(),
+          telefono: newTel.trim(),
+          email: newEmail.trim(),
+          canal: "Manual",
+          setter: "",
+          closer: "",
+          programa: "",
+          cashDia1: 0,
+          ticketTotal: 0,
+          planPago: "",
+          metodoPago: "",
+          receptor: "",
+          contexto: "",
+          fecha: new Date().toISOString().split("T")[0],
+          mes: `${new Date().getFullYear()}-${new Date().getMonth() + 1}`,
+        }),
+      });
+      if (!res.ok) throw new Error("Error al crear lead");
+      // Reload page to pick up the new lead
+      window.location.reload();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Error inesperado");
+      setCreatingLead(false);
+    }
+  }
 
   function selectLead(lead: Llamada) {
     setSelectedLead(lead);
@@ -209,14 +251,42 @@ export default function CargarLlamadaForm({ llamadas }: Props) {
             Mostrando {pendientes.length} leads pendientes de cierre
           </p>
 
-          <input
-            type="text"
-            placeholder="Nombre o Instagram..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className={inputClass}
-            autoFocus
-          />
+          <div className="flex gap-2 mb-4">
+            <input
+              type="text"
+              placeholder="Nombre o Instagram..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className={`${inputClass} flex-1`}
+              autoFocus
+            />
+            <button
+              onClick={() => setShowNewLead(!showNewLead)}
+              className="bg-purple hover:bg-purple-dark text-white text-xs font-semibold px-3 py-2.5 rounded-lg transition-colors whitespace-nowrap"
+            >
+              + Nuevo Lead
+            </button>
+          </div>
+
+          {showNewLead && (
+            <div className="bg-[#111113] border border-purple/30 rounded-lg p-4 mb-4">
+              <p className="text-sm font-semibold mb-3">Cargar nuevo lead</p>
+              <div className="grid grid-cols-2 gap-2 mb-3">
+                <input className={inputClass} placeholder="Nombre *" value={newName} onChange={e => setNewName(e.target.value)} />
+                <input className={inputClass} placeholder="Instagram" value={newIG} onChange={e => setNewIG(e.target.value)} />
+                <input className={inputClass} placeholder="Teléfono" value={newTel} onChange={e => setNewTel(e.target.value)} />
+                <input className={inputClass} placeholder="Email" value={newEmail} onChange={e => setNewEmail(e.target.value)} />
+              </div>
+              {error && <p className="text-xs text-red mb-2">{error}</p>}
+              <button
+                onClick={createNewLead}
+                disabled={creatingLead}
+                className="w-full bg-green hover:bg-green/80 disabled:opacity-50 text-white text-sm font-semibold py-2 rounded-lg transition-colors"
+              >
+                {creatingLead ? "Creando..." : "Crear lead y continuar"}
+              </button>
+            </div>
+          )}
 
           <div className="mt-4 space-y-2 max-h-80 overflow-y-auto pr-1">
             {filtered.length === 0 && (
