@@ -20,8 +20,8 @@ export const loginSchema = z.object({
 export const llamadaSchema = z.object({
   rowIndex: z.number().int().min(2),
   estado: safeString(50),
-  sePresentó: z.enum(["Sí", "No", ""]).default(""),
-  calificado: z.enum(["Sí", "No", "Parcial", ""]).default(""),
+  sePresentó: safeString(20).default(""),
+  calificado: safeString(30).default(""),
   programa: safeString(50).default(""),
   contextoCloser: safeString(2000).default(""),
   cashDia1: z.number().min(0).default(0),
