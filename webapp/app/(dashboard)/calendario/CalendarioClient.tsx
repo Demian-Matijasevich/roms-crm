@@ -94,9 +94,10 @@ export default function CalendarioClient({ llamadas, gastos }: Props) {
         }
       }
 
-      // Scheduled calls (not cerrado, not cancelled)
-      if (fechaAgenda && !isCerrado && !isCancelled) {
-        const d = ensure(fechaAgenda);
+      // Scheduled calls (not cerrado, not cancelled) — use fechaLlamada first
+      const callDate = fechaLlamada || fechaAgenda;
+      if (callDate && !isCerrado && !isCancelled) {
+        const d = ensure(callDate);
         d.calls += 1;
         d.scheduledCalls.push(l);
       }
