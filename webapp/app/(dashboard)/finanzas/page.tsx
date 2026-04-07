@@ -1,5 +1,5 @@
 // webapp/app/finanzas/page.tsx
-import { fetchLlamadas, fetchGastos } from "@/lib/sheets";
+import { fetchLlamadas, fetchGastos, fetchPagos } from "@/lib/sheets";
 import { getSession } from "@/lib/auth";
 import { getCurrentMonth, getMonthlyData } from "@/lib/data";
 import { MONTH_LABELS } from "@/lib/constants";
@@ -8,7 +8,7 @@ import FinanzasClient from "./FinanzasClient";
 export const dynamic = "force-dynamic";
 
 export default async function FinanzasPage() {
-  const [llamadas, gastos] = await Promise.all([fetchLlamadas(), fetchGastos()]);
+  const [llamadas, gastos, pagos] = await Promise.all([fetchLlamadas(), fetchGastos(), fetchPagos()]);
 
   const monthlyData = getMonthlyData(llamadas, gastos);
 
@@ -39,6 +39,7 @@ export default async function FinanzasPage() {
     <FinanzasClient
       llamadas={llamadas}
       gastos={gastos}
+      pagos={pagos}
       monthlyData={monthlyData}
       defaultMonth={defaultMonth}
       availableMonths={availableMonths}

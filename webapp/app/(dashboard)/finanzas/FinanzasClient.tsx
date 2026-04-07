@@ -6,10 +6,12 @@ import { GastosChart } from "@/app/components/Charts";
 import MonthSelector from "@/app/components/MonthSelector";
 import ExportButton from "@/app/components/ExportButton";
 import type { Llamada, Gasto, MonthlyData } from "@/lib/types";
+import type { Pago } from "@/lib/sheets";
 
 interface FinanzasClientProps {
   llamadas: Llamada[];
   gastos: Gasto[];
+  pagos: Pago[];
   monthlyData: MonthlyData[];
   defaultMonth: string;
   availableMonths: string[];
@@ -23,6 +25,7 @@ function parseMonth(fecha: string): string {
 export default function FinanzasClient({
   llamadas,
   gastos,
+  pagos,
   monthlyData,
   defaultMonth,
   availableMonths,
@@ -89,20 +92,29 @@ export default function FinanzasClient({
     return Array.from(map.entries()).sort((a, b) => b[1].total - a[1].total);
   }, [gastosMes]);
 
-  // Ingresos por receptor (quién recibió la plata)
+  // Ingresos por receptor — from Registro de Pagos (has receptor field)
+  const pagosMes = useMemo(() => {
+    return pagos.filter(p => {
+      if (!p.mes && !p.fecha) return false;
+      if (p.mes) return p.mes === mes;
+      const parts = p.fecha?.split("-");
+      if (parts?.length >= 2) return `${parts[0]}-${parseInt(parts[1])}` === mes;
+      return false;
+    });
+  }, [pagos, mes]);
+
   const ingresosPorReceptor = useMemo(() => {
     const map = new Map<string, { count: number; total: number }>();
-    // From llamadas (cashDia1 de ventas cerradas)
-    for (const l of llamadasMes) {
-      if (!isCerrado(l) || l.cashDia1 <= 0) continue;
-      const receptor = l.quienRecibe?.trim() || "Sin asignar";
+    for (const p of pagosMes) {
+      if (p.monto <= 0) continue;
+      const receptor = p.receptor?.trim() || "Sin asignar";
       if (!map.has(receptor)) map.set(receptor, { count: 0, total: 0 });
       const r = map.get(receptor)!;
       r.count++;
-      r.total += l.cashDia1;
+      r.total += p.monto;
     }
     return Array.from(map.entries()).sort((a, b) => b[1].total - a[1].total);
-  }, [llamadasMes]);
+  }, [pagosMes]);
 
   return (
     <div>
@@ -257,16 +269,16 @@ export default function FinanzasClient({
         )}
       </div>
 
-      {/* Tesorería — Dónde está la plata */}
+      {/* Tesorería — Dónde está la plata (from pagos) */}
       {(() => {
         const receptorMap = new Map<string, { count: number; total: number }>();
-        for (const l of llamadasMes) {
-          if (!isCerrado(l) || l.cashDia1 <= 0) continue;
-          const receptor = l.quienRecibe || "Sin asignar";
+        for (const p of pagosMes) {
+          if (p.monto <= 0) continue;
+          const receptor = p.receptor?.trim() || "Sin asignar";
           if (!receptorMap.has(receptor)) receptorMap.set(receptor, { count: 0, total: 0 });
           const r = receptorMap.get(receptor)!;
           r.count++;
-          r.total += l.cashDia1;
+          r.total += p.monto;
         }
         const receptores = Array.from(receptorMap.entries()).sort((a, b) => b[1].total - a[1].total);
 

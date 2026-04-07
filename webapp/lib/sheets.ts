@@ -103,6 +103,44 @@ export async function fetchLlamadas(): Promise<Llamada[]> {
   }));
 }
 
+export interface Pago {
+  fecha: string;
+  producto: string;
+  nombre: string;
+  telefono: string;
+  monto: number;
+  closer: string;
+  setter: string;
+  comprobante: string;
+  concepto: string;
+  receptor: string;
+  fuente: string;
+  mes: string;
+}
+
+export async function fetchPagos(): Promise<Pago[]> {
+  const sheets = getSheets();
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId: SPREADSHEET_ID,
+    range: "'💳 Registro de Pagos'!A2:L",
+  });
+  const rows = (res.data.values || []) as string[][];
+  return rows.filter(r => r[0] || r[2]).map(r => ({
+    fecha: str(r, 0),
+    producto: str(r, 1),
+    nombre: str(r, 2),
+    telefono: str(r, 3),
+    monto: num(r, 4),
+    closer: str(r, 5),
+    setter: str(r, 6),
+    comprobante: str(r, 7),
+    concepto: str(r, 8),
+    receptor: str(r, 9),
+    fuente: str(r, 10),
+    mes: str(r, 11),
+  }));
+}
+
 export async function fetchGastos(): Promise<Gasto[]> {
   const sheets = getSheets();
   const res = await sheets.spreadsheets.values.get({
