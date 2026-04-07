@@ -76,6 +76,34 @@ export default function FinanzasClient({
     return Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
   }, [gastosMes]);
 
+  // Gastos por persona (quién pagó)
+  const gastosPorPersona = useMemo(() => {
+    const map = new Map<string, { count: number; total: number }>();
+    for (const g of gastosMes) {
+      const persona = g.pagadoA?.trim() || "Sin asignar";
+      if (!map.has(persona)) map.set(persona, { count: 0, total: 0 });
+      const p = map.get(persona)!;
+      p.count++;
+      p.total += g.monto;
+    }
+    return Array.from(map.entries()).sort((a, b) => b[1].total - a[1].total);
+  }, [gastosMes]);
+
+  // Ingresos por receptor (quién recibió la plata)
+  const ingresosPorReceptor = useMemo(() => {
+    const map = new Map<string, { count: number; total: number }>();
+    // From llamadas (cashDia1 de ventas cerradas)
+    for (const l of llamadasMes) {
+      if (!isCerrado(l) || l.cashDia1 <= 0) continue;
+      const receptor = l.quienRecibe?.trim() || "Sin asignar";
+      if (!map.has(receptor)) map.set(receptor, { count: 0, total: 0 });
+      const r = map.get(receptor)!;
+      r.count++;
+      r.total += l.cashDia1;
+    }
+    return Array.from(map.entries()).sort((a, b) => b[1].total - a[1].total);
+  }, [llamadasMes]);
+
   return (
     <div>
       {/* Header */}
@@ -170,6 +198,63 @@ export default function FinanzasClient({
           <span className="text-muted">Total Comisiones</span>
           <span className="text-purple-light">{formatUSD(totalComisionesClosers + totalComisionesSetters)}</span>
         </div>
+      </div>
+
+      {/* Flujo de plata: quién gastó y quién recibió */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        {/* Gastos por persona */}
+        {gastosPorPersona.length > 0 && (
+          <div className="bg-card-bg border border-card-border rounded-xl p-6">
+            <h3 className="text-base font-semibold mb-4">💸 Quién gastó</h3>
+            <div className="space-y-3">
+              {gastosPorPersona.map(([persona, data]) => (
+                <div key={persona} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-red/10 flex items-center justify-center text-xs font-bold text-red">
+                      {persona.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">{persona}</p>
+                      <p className="text-[10px] text-muted">{data.count} gasto{data.count !== 1 ? "s" : ""}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm font-bold text-red">{formatUSD(data.total)}</p>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-between text-sm font-bold pt-3 mt-3 border-t border-card-border">
+              <span className="text-muted">Total</span>
+              <span className="text-red">{formatUSD(gastosPorPersona.reduce((s, [, d]) => s + d.total, 0))}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Ingresos por receptor */}
+        {ingresosPorReceptor.length > 0 && (
+          <div className="bg-card-bg border border-card-border rounded-xl p-6">
+            <h3 className="text-base font-semibold mb-4">💰 Quién recibió</h3>
+            <div className="space-y-3">
+              {ingresosPorReceptor.map(([receptor, data]) => (
+                <div key={receptor} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-green/10 flex items-center justify-center text-xs font-bold text-green">
+                      {receptor.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">{receptor}</p>
+                      <p className="text-[10px] text-muted">{data.count} pago{data.count !== 1 ? "s" : ""}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm font-bold text-green">{formatUSD(data.total)}</p>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-between text-sm font-bold pt-3 mt-3 border-t border-card-border">
+              <span className="text-muted">Total</span>
+              <span className="text-green">{formatUSD(ingresosPorReceptor.reduce((s, [, d]) => s + d.total, 0))}</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Tesorería — Dónde está la plata */}
