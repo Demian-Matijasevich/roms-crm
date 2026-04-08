@@ -1,10 +1,14 @@
 // webapp/app/form/llamada/page.tsx
+import { redirect } from "next/navigation";
 import { fetchLlamadas } from "@/lib/sheets";
+import { getSession } from "@/lib/auth";
 import CargarLlamadaForm from "./CargarLlamadaForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function CargarLlamadaPage() {
+  const session = await getSession();
+  if (!session) redirect("/login");
   const llamadas = await fetchLlamadas();
 
   return (
@@ -16,7 +20,7 @@ export default async function CargarLlamadaPage() {
         </p>
       </div>
 
-      <CargarLlamadaForm llamadas={llamadas} />
+      <CargarLlamadaForm llamadas={llamadas} closerName={session.nombre} />
     </div>
   );
 }

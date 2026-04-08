@@ -6,6 +6,7 @@ import { ESTADOS_LLAMADA, PROGRAMS } from "@/lib/constants";
 
 interface Props {
   llamadas: Llamada[];
+  closerName?: string;
 }
 
 type Step = 1 | 2 | 3 | 4;
@@ -22,7 +23,7 @@ function isCerrado(estado: string) {
   return estado.toLowerCase().includes("cerrado") || estado.toLowerCase().includes("reserva");
 }
 
-export default function CargarLlamadaForm({ llamadas }: Props) {
+export default function CargarLlamadaForm({ llamadas, closerName }: Props) {
   const [step, setStep] = useState<Step>(1);
   const [search, setSearch] = useState("");
   const [selectedLead, setSelectedLead] = useState<Llamada | null>(null);
@@ -82,7 +83,7 @@ export default function CargarLlamadaForm({ llamadas }: Props) {
           email: newEmail.trim(),
           canal: "Manual",
           setter: "",
-          closer: "",
+          closer: closerName || "",
           programa: "",
           cashDia1: 0,
           ticketTotal: 0,
