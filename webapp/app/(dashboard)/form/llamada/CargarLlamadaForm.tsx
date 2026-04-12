@@ -47,6 +47,7 @@ export default function CargarLlamadaForm({ llamadas, closerName }: Props) {
   // Step 4 fields (payment)
   const [planPago, setPlanPago] = useState<"PIF" | "3 Cuotas" | "">("");
   const [cashDia1, setCashDia1] = useState("");
+  const [fechaPago1, setFechaPago1] = useState(new Date().toISOString().split("T")[0]);
   const [metodoPago, setMetodoPago] = useState("");
 
   // Pendientes: estado vacío o "Pendiente"
@@ -156,6 +157,7 @@ export default function CargarLlamadaForm({ llamadas, closerName }: Props) {
       cashDia1: cashDia1 ? parseFloat(cashDia1) : 0,
       planPago,
       pago1: cashDia1 ? parseFloat(cashDia1) : 0,
+      fechaPago1,
       metodoPago,
     };
 
@@ -190,6 +192,7 @@ export default function CargarLlamadaForm({ llamadas, closerName }: Props) {
     setContextoCloser("");
     setPlanPago("");
     setCashDia1("");
+    setFechaPago1(new Date().toISOString().split("T")[0]);
     setMetodoPago("");
     setError("");
     setSubmitted(false);
@@ -510,6 +513,17 @@ export default function CargarLlamadaForm({ llamadas, closerName }: Props) {
                   className={`${inputClass} pl-7`}
                 />
               </div>
+            </div>
+
+            {/* Fecha de pago */}
+            <div>
+              <label className={labelClass}>Fecha de pago</label>
+              <input
+                type="date"
+                value={fechaPago1}
+                onChange={(e) => setFechaPago1(e.target.value)}
+                className={inputClass}
+              />
             </div>
 
             {/* Método de pago */}

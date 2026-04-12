@@ -1,0 +1,113 @@
+<h2>Pregunta 8: ¿Cómo debería verse el home de un closer?</h2>
+<p class="subtitle">Cuando Juan Martín abre la app a las 9am, ¿qué ve primero? Elegí el approach.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Dashboard de métricas (como hoy)</h3>
+      <p>KPIs arriba, gráficos, leaderboard mini, cash semanal. El closer ve sus números del mes. Informativo pero pasivo — no le dice qué hacer.</p>
+      <div style="margin-top:12px; padding:12px; background:#111; border-radius:8px; font-size:13px; color:#71717a;">
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:12px;">
+          <div style="background:#18181b; border:1px solid #27272a; border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:10px; color:#71717a;">CASH MES</div>
+            <div style="font-size:18px; font-weight:bold; color:#22c55e;">$24,500</div>
+          </div>
+          <div style="background:#18181b; border:1px solid #27272a; border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:10px; color:#71717a;">LLAMADAS</div>
+            <div style="font-size:18px; font-weight:bold; color:#e5e5e5;">47</div>
+          </div>
+          <div style="background:#18181b; border:1px solid #27272a; border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:10px; color:#71717a;">CIERRE %</div>
+            <div style="font-size:18px; font-weight:bold; color:#a78bfa;">32%</div>
+          </div>
+          <div style="background:#18181b; border:1px solid #27272a; border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:10px; color:#71717a;">COMISIÓN</div>
+            <div style="font-size:18px; font-weight:bold; color:#eab308;">$2,450</div>
+          </div>
+        </div>
+        <div style="color:#71717a; font-size:11px; text-align:center;">📊 Gráficos + Leaderboard + Cash semanal abajo...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Agenda del día (action-first)</h3>
+      <p>Arriba: "Hoy tenés 4 calls y 3 seguimientos". Lista de tareas del día. El closer sabe exactamente qué hacer. KPIs secundarios abajo.</p>
+      <div style="margin-top:12px; padding:12px; background:#111; border-radius:8px; font-size:13px;">
+        <div style="color:#a78bfa; font-size:11px; font-weight:600; margin-bottom:8px;">📅 HOY — Lunes 7 Abril</div>
+        <div style="display:flex; gap:6px; margin-bottom:12px;">
+          <span style="background:#8b5cf620; color:#a78bfa; border:1px solid #8b5cf630; padding:3px 10px; border-radius:99px; font-size:11px;">4 calls</span>
+          <span style="background:#eab30820; color:#eab308; border:1px solid #eab30830; padding:3px 10px; border-radius:99px; font-size:11px;">3 seguimientos</span>
+          <span style="background:#22c55e20; color:#22c55e; border:1px solid #22c55e30; padding:3px 10px; border-radius:99px; font-size:11px;">1 cuota a cobrar</span>
+        </div>
+        <div style="space-y:4px;">
+          <div style="background:#18181b; border:1px solid #27272a; border-radius:8px; padding:10px; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <span style="color:#e5e5e5; font-weight:500;">Jorge Martinez</span>
+              <span style="color:#71717a; font-size:11px; margin-left:8px;">12:00 · Zoom</span>
+            </div>
+            <span style="color:#22c55e; font-size:11px; font-weight:600;">A+</span>
+          </div>
+          <div style="background:#18181b; border:1px solid #27272a; border-radius:8px; padding:10px; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <span style="color:#e5e5e5; font-weight:500;">Noemi Rios</span>
+              <span style="color:#71717a; font-size:11px; margin-left:8px;">14:00 · Zoom</span>
+            </div>
+            <span style="color:#eab308; font-size:11px; font-weight:600;">B</span>
+          </div>
+          <div style="background:#18181b; border:1px solid #eab30830; border-radius:8px; padding:10px; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <span style="color:#eab308; font-size:10px;">🔄 SEGUIMIENTO</span>
+              <span style="color:#e5e5e5; font-weight:500; margin-left:6px;">Daniel Sagman</span>
+              <span style="color:#71717a; font-size:11px; margin-left:8px;">Hace 3 días</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Híbrido: Agenda + KPIs + Gamificación</h3>
+      <p>Arriba: streak + posición en ranking. Centro: agenda del día con acciones rápidas. Abajo: KPIs del mes. Lo mejor de ambos mundos.</p>
+      <div style="margin-top:12px; padding:12px; background:#111; border-radius:8px; font-size:13px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid #27272a;">
+          <div>
+            <span style="font-size:20px;">🔥</span>
+            <span style="color:#ef4444; font-weight:700; font-size:16px; margin-left:4px;">5 días</span>
+            <span style="color:#71717a; font-size:11px; margin-left:4px;">racha cerrando</span>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-size:16px;">🥇</span>
+            <span style="color:#eab308; font-weight:700;">#1</span>
+            <span style="color:#71717a; font-size:11px; margin-left:4px;">en cash este mes</span>
+          </div>
+        </div>
+        <div style="color:#a78bfa; font-size:11px; font-weight:600; margin-bottom:6px;">📅 TU DÍA</div>
+        <div style="display:flex; gap:6px; margin-bottom:8px;">
+          <span style="background:#8b5cf620; color:#a78bfa; border:1px solid #8b5cf630; padding:3px 10px; border-radius:99px; font-size:11px;">4 calls</span>
+          <span style="background:#eab30820; color:#eab308; border:1px solid #eab30830; padding:3px 10px; border-radius:99px; font-size:11px;">3 seguimientos</span>
+        </div>
+        <div style="background:#18181b; border:1px solid #27272a; border-radius:8px; padding:10px; margin-bottom:4px; display:flex; justify-content:space-between;">
+          <div>
+            <span style="color:#e5e5e5; font-weight:500;">Jorge Martinez</span>
+            <span style="color:#71717a; font-size:11px; margin-left:6px;">12:00</span>
+          </div>
+          <div style="display:flex; gap:4px;">
+            <span style="background:#8b5cf6; color:white; padding:2px 8px; border-radius:6px; font-size:10px; cursor:pointer;">Cargar</span>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:10px; padding-top:10px; border-top:1px solid #27272a;">
+          <div style="text-align:center;"><div style="font-size:10px; color:#71717a;">CASH</div><div style="font-weight:700; color:#22c55e;">$24.5k</div></div>
+          <div style="text-align:center;"><div style="font-size:10px; color:#71717a;">CIERRE</div><div style="font-weight:700;">32%</div></div>
+          <div style="text-align:center;"><div style="font-size:10px; color:#71717a;">COMISIÓN</div><div style="font-weight:700; color:#eab308;">$2.4k</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

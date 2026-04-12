@@ -1,0 +1,112 @@
+<h2>ROMS CRM v3.0 — Diseño completo</h2>
+<p class="subtitle">Revisá cada sección. Vamos a ir validando una por una.</p>
+
+<div class="section">
+  <h3>Arquitectura general — 12 secciones de la app</h3>
+  <p style="color:#a1a1aa; margin-bottom:16px;">Cada rol ve solo lo que le corresponde. Admin ve todo.</p>
+
+  <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;">
+
+    <div style="background:#18181b; border:1px solid #8b5cf650; border-radius:10px; padding:14px;">
+      <div style="font-size:10px; color:#8b5cf6; font-weight:600; margin-bottom:4px;">ADMIN + CLOSER</div>
+      <div style="font-size:14px; font-weight:600; color:#e5e5e5;">🏠 Home</div>
+      <div style="font-size:11px; color:#71717a; margin-top:4px;">Híbrido: streak + agenda del día + KPIs. Personalizado por rol.</div>
+    </div>
+
+    <div style="background:#18181b; border:1px solid #8b5cf650; border-radius:10px; padding:14px;">
+      <div style="font-size:10px; color:#8b5cf6; font-weight:600; margin-bottom:4px;">ADMIN + CLOSER</div>
+      <div style="font-size:14px; font-weight:600; color:#e5e5e5;">📞 Pipeline</div>
+      <div style="font-size:11px; color:#71717a; margin-top:4px;">Vista kanban + tabla. Estados como columnas. Seguimientos con timeline.</div>
+    </div>
+
+    <div style="background:#18181b; border:1px solid #22c55e50; border-radius:10px; padding:14px;">
+      <div style="font-size:10px; color:#22c55e; font-weight:600; margin-bottom:4px;">ADMIN</div>
+      <div style="font-size:14px; font-weight:600; color:#e5e5e5;">📅 Calendario</div>
+      <div style="font-size:11px; color:#71717a; margin-top:4px;">Vista mensual: cash por día, vencimientos, cuotas, renovaciones. Todo en un calendar.</div>
+    </div>
+
+    <div style="background:#18181b; border:1px solid #22c55e50; border-radius:10px; padding:14px;">
+      <div style="font-size:10px; color:#22c55e; font-weight:600; margin-bottom:4px;">ADMIN</div>
+      <div style="font-size:14px; font-weight:600; color:#e5e5e5;">👥 Clientes</div>
+      <div style="font-size:11px; color:#71717a; margin-top:4px;">Base de clientes activos. Estado, programa, pagos, vencimiento, renovación. Editable.</div>
+    </div>
+
+    <div style="background:#18181b; border:1px solid #22c55e50; border-radius:10px; padding:14px;">
+      <div style="font-size:10px; color:#22c55e; font-weight:600; margin-bottom:4px;">ADMIN</div>
+      <div style="font-size:14px; font-weight:600; color:#e5e5e5;">📊 Closers</div>
+      <div style="font-size:11px; color:#71717a; margin-top:4px;">Métricas avanzadas: funnel, velocidad, pipeline, lead score, tendencias, distribución.</div>
+    </div>
+
+    <div style="background:#18181b; border:1px solid #22c55e50; border-radius:10px; padding:14px;">
+      <div style="font-size:10px; color:#22c55e; font-weight:600; margin-bottom:4px;">ADMIN</div>
+      <div style="font-size:14px; font-weight:600; color:#e5e5e5;">💰 Finanzas</div>
+      <div style="font-size:11px; color:#71717a; margin-top:4px;">P&L + Tesorería: quién tiene la plata, por billetera, comisiones detalladas, multi-moneda.</div>
+    </div>
+
+    <div style="background:#18181b; border:1px solid #eab30850; border-radius:10px; padding:14px;">
+      <div style="font-size:10px; color:#eab308; font-weight:600; margin-bottom:4px;">TODOS</div>
+      <div style="font-size:14px; font-weight:600; color:#e5e5e5;">🏆 Leaderboard</div>
+      <div style="font-size:11px; color:#71717a; margin-top:4px;">Rankings gamificados. Streaks, badges, closer del mes, comparativas.</div>
+    </div>
+
+    <div style="background:#18181b; border:1px solid #eab30850; border-radius:10px; padding:14px;">
+      <div style="font-size:10px; color:#eab308; font-weight:600; margin-bottom:4px;">ADMIN + CLOSER</div>
+      <div style="font-size:14px; font-weight:600; color:#e5e5e5;">💳 Comisiones</div>
+      <div style="font-size:11px; color:#71717a; margin-top:4px;">Cada closer ve sus comisiones detalladas. Admin ve todas. Desglose por venta.</div>
+    </div>
+
+    <div style="background:#18181b; border:1px solid #eab30850; border-radius:10px; padding:14px;">
+      <div style="font-size:10px; color:#eab308; font-weight:600; margin-bottom:4px;">ADMIN</div>
+      <div style="font-size:14px; font-weight:600; color:#e5e5e5;">🔬 Analytics</div>
+      <div style="font-size:11px; color:#71717a; margin-top:4px;">Respuestas Calendly, fuente vs cierre, perfil ideal, correlaciones. El cerebro del CRM.</div>
+    </div>
+
+    <div style="background:#18181b; border:1px solid #27272a; border-radius:10px; padding:14px;">
+      <div style="font-size:10px; color:#71717a; font-weight:600; margin-bottom:4px;">CLOSER</div>
+      <div style="font-size:14px; font-weight:600; color:#e5e5e5;">📝 Carga rápida</div>
+      <div style="font-size:11px; color:#71717a; margin-top:4px;">Forms optimizados: resultado de call, pago, seguimiento. Mínimos clicks.</div>
+    </div>
+
+    <div style="background:#18181b; border:1px solid #27272a; border-radius:10px; padding:14px;">
+      <div style="font-size:10px; color:#71717a; font-weight:600; margin-bottom:4px;">SETTER</div>
+      <div style="font-size:14px; font-weight:600; color:#e5e5e5;">🔗 UTM + Reporte</div>
+      <div style="font-size:11px; color:#71717a; margin-top:4px;">UTM builder + reporte diario. Simple y directo.</div>
+    </div>
+
+    <div style="background:#18181b; border:1px solid #ef444450; border-radius:10px; padding:14px;">
+      <div style="font-size:10px; color:#ef4444; font-weight:600; margin-bottom:4px;">ADMIN</div>
+      <div style="font-size:14px; font-weight:600; color:#e5e5e5;">⚙️ Config</div>
+      <div style="font-size:11px; color:#71717a; margin-top:4px;">Equipo, comisiones, programas, objetivos. Todo editable sin código.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px;">
+  <h3>Features transversales</h3>
+  <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:8px;">
+    <div style="background:#111; border:1px solid #27272a; border-radius:8px; padding:12px;">
+      <div style="color:#a78bfa; font-weight:600; font-size:13px;">🔔 Banner de ventas</div>
+      <div style="color:#71717a; font-size:11px; margin-top:4px;">Cuando alguien cierra, banner sutil para todos los users online</div>
+    </div>
+    <div style="background:#111; border:1px solid #27272a; border-radius:8px; padding:12px;">
+      <div style="color:#a78bfa; font-weight:600; font-size:13px;">⌘K Búsqueda global</div>
+      <div style="color:#71717a; font-size:11px; margin-top:4px;">Buscar lead, alumno, closer por nombre desde cualquier página</div>
+    </div>
+    <div style="background:#111; border:1px solid #27272a; border-radius:8px; padding:12px;">
+      <div style="color:#a78bfa; font-weight:600; font-size:13px;">📄 Export PDF branded</div>
+      <div style="color:#71717a; font-size:11px; margin-top:4px;">Reportes con logo 7ROMS, diseño pro, para presentar a socios/inversores</div>
+    </div>
+    <div style="background:#111; border:1px solid #27272a; border-radius:8px; padding:12px;">
+      <div style="color:#a78bfa; font-weight:600; font-size:13px;">💱 Multi-moneda</div>
+      <div style="color:#71717a; font-size:11px; margin-top:4px;">USD principal + registro en pesos. Tesorería por billetera/receptor</div>
+    </div>
+    <div style="background:#111; border:1px solid #27272a; border-radius:8px; padding:12px;">
+      <div style="color:#a78bfa; font-weight:600; font-size:13px;">⏳ Loading states</div>
+      <div style="color:#71717a; font-size:11px; margin-top:4px;">Skeletons en vez de pantalla blanca. Feedback visual en cada acción</div>
+    </div>
+    <div style="background:#111; border:1px solid #27272a; border-radius:8px; padding:12px;">
+      <div style="color:#a78bfa; font-weight:600; font-size:13px;">🔒 Seguridad</div>
+      <div style="color:#71717a; font-size:11px; margin-top:4px;">Sesiones firmadas, auth en APIs, validación zod, rate limiting</div>
+    </div>
+  </div>
+</div>

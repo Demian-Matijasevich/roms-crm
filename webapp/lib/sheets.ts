@@ -172,6 +172,7 @@ export async function appendCallResult(data: {
   cashDia1: number;
   planPago: string;
   pago1: number;
+  fechaPago1: string;
   metodoPago: string;
 }, rowIndex: number): Promise<void> {
   const sheets = getSheets(false);
@@ -185,6 +186,7 @@ export async function appendCallResult(data: {
     { range: `'📞 Registro Calls'!P${rowIndex}`, values: [[data.planPago]] },
     { range: `'📞 Registro Calls'!Q${rowIndex}`, values: [[data.pago1]] },
     { range: `'📞 Registro Calls'!R${rowIndex}`, values: [["Pagado"]] },
+    { range: `'📞 Registro Calls'!S${rowIndex}`, values: [[data.fechaPago1 || ""]] },
     { range: `'📞 Registro Calls'!Y${rowIndex}`, values: [[data.metodoPago]] },
   ];
 

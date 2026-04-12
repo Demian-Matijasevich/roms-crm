@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.issues[0]?.message || "Datos inválidos" }, { status: 400 });
     }
-    const { rowIndex, estado, sePresentó, calificado, programa, contextoCloser, cashDia1, planPago, pago1, metodoPago } = parsed.data;
+    const { rowIndex, estado, sePresentó, calificado, programa, contextoCloser, cashDia1, planPago, pago1, fechaPago1, metodoPago } = parsed.data;
 
     await appendCallResult(
       {
@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
         cashDia1,
         planPago,
         pago1,
+        fechaPago1,
         metodoPago,
       },
       rowIndex

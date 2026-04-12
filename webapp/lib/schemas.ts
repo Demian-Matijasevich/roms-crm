@@ -27,6 +27,7 @@ export const llamadaSchema = z.object({
   cashDia1: z.number().min(0).default(0),
   planPago: safeString(30).default(""),
   pago1: z.number().min(0).default(0),
+  fechaPago1: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).default("").or(z.literal("")),
   metodoPago: safeString(30).default(""),
 });
 
